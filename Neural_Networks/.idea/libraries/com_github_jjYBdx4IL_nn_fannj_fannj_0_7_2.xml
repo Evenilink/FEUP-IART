@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="com.github.jjYBdx4IL.nn.fannj:fannj:0.7.2" type="repository">
+    <properties maven-id="com.github.jjYBdx4IL.nn.fannj:fannj:0.7.2" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/fannj-0.7.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jna-4.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
