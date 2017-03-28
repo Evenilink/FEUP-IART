@@ -8,12 +8,14 @@ public class Expression {
     private static final String expressionsFolder = "../grammatical_facial_expression/";
     private ArrayList<String> frames;
     private ArrayList<String> results;
-
+    private int size;
+    
     public Expression(String datasetName) {
         frames = new ArrayList<>();
         results = new ArrayList<>();
         this.parse(Paths.get("../grammatical_facial_expression/" + datasetName + "_datapoints.txt"), frames);
         this.parse(Paths.get("../grammatical_facial_expression/" + datasetName + "_datapoints.txt"), results);
+        this.size = Math.min(frames.size(), results.size());
     }
 
     private void parse(Path fileLoc, ArrayList<String> destination) {
@@ -39,3 +41,6 @@ public class Expression {
         return results;
     }
 }
+    public int getSize() {
+        return size;
+    }
