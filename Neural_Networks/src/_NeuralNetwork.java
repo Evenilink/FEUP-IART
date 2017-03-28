@@ -13,26 +13,28 @@ public class _NeuralNetwork {
     private MultiLayerPerceptron perceptron;
 
     public _NeuralNetwork(int maxInterations, double maxError, float learningRate) {
-        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 2, 3, 1);
+        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 300, 350, 1);
         backPropagation = new BackPropagation();
         backPropagation.setMaxIterations(maxInterations);
         backPropagation.setMaxError(maxError);
         backPropagation.setLearningRate(learningRate);
+        System.out.println("Neural network ready.");
     }
 
     public void learnDataSet(DataSet dataSet) {
-        perceptron.learn(dataSet, backPropagation);
         System.out.println("Neural network started learning.");
+        perceptron.learn(dataSet, backPropagation);
     }
 
-    public void testNeuralNetwork(NeuralNetwork neuralNetwork, DataSet dataSet) {
-        for(DataSetRow row : dataSet.getRows()) {
-            neuralNetwork.setInput(row.getInput());
-            neuralNetwork.calculate();
+    public void testNeuralNetwork(DataSet dataSet) {
+        System.out.println("Neural network started calculating.");
 
-            System.out.println("Input: " + Arrays.toString(row.getInput()) +
-                    " | Desired output: " + row.getDesiredOutput() +
-                    " | Actual output: " + neuralNetwork.getOutput());
+        for(DataSetRow row : dataSet.getRows()) {
+            perceptron.setInput(row.getInput());
+            perceptron.calculate();
+
+            System.out.println("Desired output: " + Arrays.toString(row.getDesiredOutput()) +
+                    " | Actual output: " + Arrays.toString(perceptron.getOutput()));
         }
     }
 

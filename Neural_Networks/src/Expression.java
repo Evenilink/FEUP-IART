@@ -5,16 +5,17 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class Expression {
+
     private static final String expressionsFolder = "../grammatical_facial_expression/";
     private ArrayList<String> frames;
     private ArrayList<String> results;
     private int size;
-    
+
     public Expression(String datasetName) {
         frames = new ArrayList<>();
         results = new ArrayList<>();
-        this.parse(Paths.get("../grammatical_facial_expression/" + datasetName + "_datapoints.txt"), frames);
-        this.parse(Paths.get("../grammatical_facial_expression/" + datasetName + "_datapoints.txt"), results);
+        this.parse(Paths.get(expressionsFolder + datasetName + "_datapoints.txt"), frames);
+        this.parse(Paths.get(expressionsFolder + datasetName + "_targets.txt"), results);
         this.size = Math.min(frames.size(), results.size());
     }
 
@@ -24,7 +25,7 @@ public class Expression {
                 // Discards first line
                 if (!s.startsWith("0.0")) {
                     if (s.contains(" "))
-                        s = s.substring(s.indexOf(" " + 1));
+                        s = s.substring(s.indexOf(" ") + 1);
                     destination.add(s);
                 }
             });
@@ -40,7 +41,8 @@ public class Expression {
     public ArrayList<String> getResults() {
         return results;
     }
-}
-    public int getSize() {
+
+    public int size() {
         return size;
     }
+}
