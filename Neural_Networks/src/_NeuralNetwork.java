@@ -12,8 +12,8 @@ public class _NeuralNetwork {
     private BackPropagation backPropagation;
     private MultiLayerPerceptron perceptron;
 
-    public _NeuralNetwork(int maxInterations, double maxError, float learningRate) {
-        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 300, 350, 1);
+    public _NeuralNetwork(int maxInterations, double maxError, float learningRate, int firstLayerCount) {
+        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, firstLayerCount, 350, 1);
         backPropagation = new BackPropagation();
         backPropagation.setMaxIterations(maxInterations);
         backPropagation.setMaxError(maxError);

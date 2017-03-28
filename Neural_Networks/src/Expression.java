@@ -19,12 +19,13 @@ public class Expression {
         this.parse(Paths.get(expressionsFolder + datasetName + "_targets.txt"), results);
         this.size = Math.min(frames.size(), results.size());
         this.framesCount = 0;
+
         String s = frames.get(0);
-        while(s.contains(" ")) {
+        do {
             s = s.substring(s.indexOf(" ") + 1);
             this.framesCount++;
-        }
-
+        } while(s.contains(" "));
+        this.framesCount++;
     }
 
     private void parse(Path fileLoc, ArrayList<String> destination) {

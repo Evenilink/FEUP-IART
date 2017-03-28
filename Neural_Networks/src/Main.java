@@ -11,11 +11,11 @@ public class Main {
 
         Expression expression = new Expression("a_affirmative");
 
-        DataSet dataSet = new DataSet(300, 1);
+        DataSet dataSet = new DataSet(expression.getFramesCount(), 1);
         for(int i = 0; i < expression.size(); i++)
             dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
 
-        _NeuralNetwork neuralNetwork = new _NeuralNetwork(Integer.parseInt(args[0]), Double.parseDouble(args[1]), Float.parseFloat(args[2]));
+        _NeuralNetwork neuralNetwork = new _NeuralNetwork(Integer.parseInt(args[0]), Double.parseDouble(args[1]), Float.parseFloat(args[2]), expression.getFramesCount());
         neuralNetwork.learnDataSet(dataSet);
         neuralNetwork.testNeuralNetwork(dataSet);
         neuralNetwork.saveNeuralNetwork(args[3]);
