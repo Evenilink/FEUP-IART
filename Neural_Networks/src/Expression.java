@@ -20,8 +20,11 @@ public class Expression {
         try {
             Files.lines(fileLoc).forEach(s -> {
                 // Discards first line
-                if (!s.startsWith("0.0"))
+                if (!s.startsWith("0.0")) {
+                    if (s.contains(" "))
+                        s = s.substring(s.indexOf(" " + 1));
                     destination.add(s);
+                }
             });
         } catch (IOException e) {
             e.printStackTrace();
