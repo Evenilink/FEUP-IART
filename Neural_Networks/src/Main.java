@@ -9,15 +9,20 @@ public class Main {
             return;
         }
 
-        Expression expression = new Expression("a_affirmative");
+        int maxIterations = Integer.parseInt(args[0]);
+        double maxError = Double.parseDouble(args[1]);
+        float learningRate = Float.parseFloat(args[2]);
+        String filename = args[3];
 
-        DataSet dataSet = new DataSet(expression.getFramesCount(), 1);
+        Expression expression = new Expression(filename);
+        DataSet dataSet = new DataSet(expression.GetFramesCount(), 1);
+
         for(int i = 0; i < expression.size(); i++)
             dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
 
-        _NeuralNetwork neuralNetwork = new _NeuralNetwork(Integer.parseInt(args[0]), Double.parseDouble(args[1]), Float.parseFloat(args[2]), expression.getFramesCount());
-        neuralNetwork.learnDataSet(dataSet);
-        neuralNetwork.testNeuralNetwork(dataSet);
-        neuralNetwork.saveNeuralNetwork(args[3]);
+        _NeuralNetwork neuralNetwork = new _NeuralNetwork(maxIterations, maxError, learningRate, expression.GetFramesCount());
+        neuralNetwork.LearnDataSet(dataSet);
+        neuralNetwork.TestNeuralNetwork(dataSet);
+        neuralNetwork.SaveNeuralNetwork(args[3]);
     }
 }

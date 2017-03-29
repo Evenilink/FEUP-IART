@@ -15,8 +15,8 @@ public class Expression {
     public Expression(String datasetName) {
         frames = new ArrayList<>();
         results = new ArrayList<>();
-        this.parse(Paths.get(expressionsFolder + datasetName + "_datapoints.txt"), frames);
-        this.parse(Paths.get(expressionsFolder + datasetName + "_targets.txt"), results);
+        this.Parse(Paths.get(expressionsFolder + datasetName + "_datapoints.txt"), frames);
+        this.Parse(Paths.get(expressionsFolder + datasetName + "_targets.txt"), results);
         this.size = Math.min(frames.size(), results.size());
         this.framesCount = 0;
 
@@ -28,7 +28,7 @@ public class Expression {
         this.framesCount++;
     }
 
-    private void parse(Path fileLoc, ArrayList<String> destination) {
+    private void Parse(Path fileLoc, ArrayList<String> destination) {
         try {
             Files.lines(fileLoc).forEach(s -> {
                 // Discards first line
@@ -55,7 +55,7 @@ public class Expression {
         return size;
     }
 
-    public int getFramesCount() {
+    public int GetFramesCount() {
         return framesCount;
     }
 }

@@ -21,12 +21,12 @@ public class _NeuralNetwork {
         System.out.println("Neural network ready.");
     }
 
-    public void learnDataSet(DataSet dataSet) {
+    public void LearnDataSet(DataSet dataSet) {
         System.out.println("Neural network started learning.");
         perceptron.learn(dataSet, backPropagation);
     }
 
-    public void testNeuralNetwork(DataSet dataSet) {
+    public void TestNeuralNetwork(DataSet dataSet) {
         System.out.println("Neural network started calculating.");
 
         for(DataSetRow row : dataSet.getRows()) {
@@ -38,7 +38,7 @@ public class _NeuralNetwork {
         }
     }
 
-    public void saveNeuralNetwork(String filename) {
+    public void SaveNeuralNetwork(String filename) {
         perceptron.save(filename);
     }
 
