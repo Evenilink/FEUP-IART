@@ -13,7 +13,9 @@ public class _NeuralNetwork {
     private MultiLayerPerceptron perceptron;
 
     public _NeuralNetwork(int maxInterations, double maxError, float learningRate, int firstLayerCount) {
-        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, firstLayerCount, 350, 1);
+        int numHiddenNodes = (firstLayerCount + 1) / 2;
+
+        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, firstLayerCount, numHiddenNodes, 1);
         backPropagation = new BackPropagation();
         backPropagation.setMaxIterations(maxInterations);
         backPropagation.setMaxError(maxError);
