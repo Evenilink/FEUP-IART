@@ -114,7 +114,7 @@ public class Main {
         fr.close();
 
         System.out.println("\tApplying best rules:\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
-        CreateNeuralNetwork(selectedNetworkName, maxIterations, maxError, learningRate);
+        CreateNeuralNetwork(selectedNetworkName, maxIterations, maxError, learningRate, true);
     }
 
     private static void BruteForce() throws IOException {

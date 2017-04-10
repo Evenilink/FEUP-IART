@@ -120,10 +120,25 @@ public class _NeuralNetwork {
         String line;
         int i = 0;
 
+        boolean replace = false;
         // Detects where to put the current back propagation rules in the file, since the top most rules are the best for this network.
         while((line = br.readLine()) != null) {
             String[] msgSplit = line.split(" ");
+            int fileMaxIterations = Integer.parseInt(msgSplit[0]);
+            double fileMaxError = Double.parseDouble(msgSplit[1]);
+            float fileLearningRate = Float.parseFloat(msgSplit[2]);
             double filePerformance = Double.parseDouble(msgSplit[3]);
+
+            // If the rules are the same but the performance is higher or equal, there's no need to write to the file.
+            if(fileMaxIterations == maxIterations &&
+                    fileMaxError == maxError &&
+                    fileLearningRate == learningRate) {
+                if(performance < filePerformance) {
+                    replace = true;
+                    break;
+                } else
+                    return;
+            }
 
             if(performance < filePerformance)
                 break;
@@ -136,6 +151,8 @@ public class _NeuralNetwork {
         Path path = Paths.get(Utils.PERFORMANCE_FOLDER + name + ".txt");
         List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
         lines.add(i, str);
+        if(replace)
+            lines.remove(i+1);
         Files.write(path, lines, StandardCharsets.UTF_8);
     }
 
