@@ -12,14 +12,12 @@ public class _NeuralNetwork {
     private BackPropagation backPropagation;
     private MultiLayerPerceptron perceptron;
 
-    public _NeuralNetwork(int maxInterations, double maxError, float learningRate, int firstLayerCount) {
-        int numHiddenNodes = (firstLayerCount + 1) / 2;
-
-        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, firstLayerCount, numHiddenNodes, 1);
+    public _NeuralNetwork(int firstLayerCount) {
+        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, firstLayerCount, Utils.NUM_HIDDEN_LAYERS, Utils.NUM_OUTPUT_LAYER);
         backPropagation = new BackPropagation();
-        backPropagation.setMaxIterations(maxInterations);
-        backPropagation.setMaxError(maxError);
-        backPropagation.setLearningRate(learningRate);
+        backPropagation.setMaxIterations(Utils.MAX_ITERATIONS);
+        backPropagation.setMaxError(Utils.MAX_ERROR);
+        backPropagation.setLearningRate(Utils.LEARNING_RATE);
         System.out.println("Neural network ready.");
     }
 
@@ -41,10 +39,10 @@ public class _NeuralNetwork {
     }
 
     public void SaveNeuralNetwork(String filename) {
-        perceptron.save(filename);
+        perceptron.save(Utils.TRAINED_NETWORK_FOLDER + filename);
     }
 
-    public void loadNeuralNetwork(String filename) {
+    public void LoadNeuralNetwork(String filename) {
         perceptron = (MultiLayerPerceptron) NeuralNetwork.createFromFile(filename);
     }
 }
