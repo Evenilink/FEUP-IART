@@ -10,9 +10,9 @@ public class Utils {
     public static final int VERTICAL_RESOLUTION = 480;
     public static final int MAX_DEEPTH = 4000;
 
-    public static final int MAX_ITERATIONS = 1000;
+    public static final int MAX_ITERATIONS = 3000;
     public static final double MAX_ERROR = 0.001;
-    public static final float LEARNING_RATE = 0.1f;
+    public static final float LEARNING_RATE = 0.01f;
 
     public static final float PERCENTAGE_TO_TRAIN = 0.8f;
 }

@@ -5,6 +5,7 @@ import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.BackPropagation;
 import org.neuroph.util.TransferFunctionType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class _NeuralNetwork {
@@ -27,15 +28,26 @@ public class _NeuralNetwork {
     }
 
     public void TestNeuralNetwork(DataSet dataSet) {
+        ArrayList<Double> diffArray = new ArrayList<>();
         System.out.println("Neural network started calculating.");
 
         for(DataSetRow row : dataSet.getRows()) {
             perceptron.setInput(row.getInput());
             perceptron.calculate();
 
-            System.out.println("Desired output: " + Arrays.toString(row.getDesiredOutput()) +
-                    " | Actual output: " + Arrays.toString(perceptron.getOutput()));
+            double desiredOutput = Double.parseDouble(Arrays.toString(row.getDesiredOutput()).replace("[", "").replace("]", ""));
+            double actualOutput = Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
+            double diff = desiredOutput - actualOutput;
+            diffArray.add(diff);
+
+            System.out.println("Desired output: " + desiredOutput + " | Actual output: " + actualOutput + " | Diference: " + diff);
         }
+
+        double diffSum = 0;
+        for(int i = 0; i < diffArray.size(); i++)
+            diffSum += diffArray.get(i);
+
+        System.out.println("\nAverage difference: " + diffSum / diffArray.size());
     }
 
     public void SaveNeuralNetwork(String filename) {
