@@ -1,6 +1,7 @@
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -14,14 +15,27 @@ public class Main {
     public static void main(String[] args) throws IOException {
         scanner = new Scanner(System.in);
         neuralNetworks = new ArrayList<>();
+        LoadNetworks();
         Menu();
+    }
+
+    private static void LoadNetworks() {
+        File folder = new File(Utils.TRAINED_NETWORK_FOLDER);
+        File[] files = folder.listFiles();
+
+        for(int i = 0; i < files.length; i++) {
+            String fileName = files[i].getName();
+            _NeuralNetwork neuralNetwork = new _NeuralNetwork();
+            neuralNetwork.LoadNeuralNetwork(fileName);
+            neuralNetworks.add(neuralNetwork);
+        }
     }
 
     private static void Menu() throws IOException {
         System.out.println("NEURAL NETWORKS\n");
 
         do {
-            System.out.print("1 - Create and make a Network learn\n2 - Test Network\n0 - Exit\nPlease select a sub-menu: ");
+            System.out.print("1 - Create and make a Network learn\n2 - Test Network\n0 - Exit\n\nPlease select a sub-menu: ");
             userInput = scanner.nextInt();
             scanner.nextLine();     // Get's rid of the newline.
 
@@ -58,10 +72,16 @@ public class Main {
     }
 
     private static void TestNetwork() throws IOException {
-        for(int i = 0; i < neuralNetworks.size(); i++)
-            System.out.println("\t" + neuralNetworks.get(i));
+        if(neuralNetworks.size() == 0) {
+            System.out.println("\n\tThere are no available networks.\n");
+            return;
+        }
 
-        System.out.print("\n\tSelect a network to test");
+        System.out.println("\n\tAvailable networks:");
+        for(int i = 0; i < neuralNetworks.size(); i++)
+            System.out.println("\t" + (i+1) + " - " + neuralNetworks.get(i).GetName());
+
+        System.out.print("\n\tSelect a network to test: ");
         int networkToTest = scanner.nextInt();
         scanner.nextLine();
 
@@ -75,7 +95,6 @@ public class Main {
         for(int i = trainFramesAmount; i < expression.size(); i++)
             testDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
 
-        neuralNetworks.get(networkToTest).TestNeuralNetwork(testDataSet);
-
+        neuralNetworks.get(networkToTest-1).TestNeuralNetwork(testDataSet);
     }
 }
