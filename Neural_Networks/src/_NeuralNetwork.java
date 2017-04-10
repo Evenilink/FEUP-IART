@@ -28,11 +28,12 @@ public class _NeuralNetwork {
     private int maxIterations;
     private double maxError;
     private float learningRate;
+    private int hiddenNodesCount;
 
-    public _NeuralNetwork(String name, int firstLayerCount, int maxIterations, double maxError, float learningRate) {
+    public _NeuralNetwork(String name, int inputNodesAmount, int hiddenNodesCount, int maxIterations, double maxError, float learningRate) {
         this.name = name;
-        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, firstLayerCount, Utils.NUM_HIDDEN_LAYERS, Utils.NUM_OUTPUT_LAYER);
-        SetBackPropagationRules(maxIterations, maxError, learningRate);
+        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, inputNodesAmount, hiddenNodesCount, Utils.NUM_OUTPUT_LAYER);
+        SetBackPropagationRules(hiddenNodesCount, maxIterations, maxError, learningRate);
         backPropagation = new BackPropagation();
         backPropagation.setMaxIterations(maxIterations);
         backPropagation.setMaxError(maxError);
@@ -44,10 +45,11 @@ public class _NeuralNetwork {
         isLoaded = true;
     }
 
-    public void SetBackPropagationRules(int maxIterations, double maxError, float learningRate) {
+    public void SetBackPropagationRules(int hiddenNodesCount, int maxIterations, double maxError, float learningRate) {
+        this.hiddenNodesCount =hiddenNodesCount;
+        this.learningRate = learningRate;
         this.maxIterations = maxIterations;
         this.maxError = maxError;
-        this.learningRate = learningRate;
     }
 
     public void LearnDataSet(DataSet dataSet, boolean displayResults) {
@@ -112,8 +114,7 @@ public class _NeuralNetwork {
         File file = new File(Utils.PERFORMANCE_FOLDER + name + ".txt");
         file.createNewFile();
 
-        String str = maxIterations + " " + maxError + " " + learningRate + " " + performance;
-
+        String str = hiddenNodesCount + " " + maxIterations + " " + maxError + " " + learningRate + " " + performance;
 
         FileReader fr = new FileReader(Utils.PERFORMANCE_FOLDER + name + ".txt");
         BufferedReader br = new BufferedReader(fr);
@@ -124,13 +125,15 @@ public class _NeuralNetwork {
         // Detects where to put the current back propagation rules in the file, since the top most rules are the best for this network.
         while((line = br.readLine()) != null) {
             String[] msgSplit = line.split(" ");
-            int fileMaxIterations = Integer.parseInt(msgSplit[0]);
-            double fileMaxError = Double.parseDouble(msgSplit[1]);
-            float fileLearningRate = Float.parseFloat(msgSplit[2]);
-            double filePerformance = Double.parseDouble(msgSplit[3]);
+            int fileHiddenNodesAmount = Integer.parseInt(msgSplit[0]);
+            int fileMaxIterations = Integer.parseInt(msgSplit[1]);
+            double fileMaxError = Double.parseDouble(msgSplit[2]);
+            float fileLearningRate = Float.parseFloat(msgSplit[3]);
+            double filePerformance = Double.parseDouble(msgSplit[4]);
 
             // If the rules are the same but the performance is higher or equal, there's no need to write to the file.
-            if(fileMaxIterations == maxIterations &&
+            if(fileHiddenNodesAmount == hiddenNodesCount &&
+                    fileMaxIterations == maxIterations &&
                     fileMaxError == maxError &&
                     fileLearningRate == learningRate) {
                 if(performance < filePerformance) {

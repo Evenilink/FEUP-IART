@@ -65,17 +65,14 @@ public class Main {
     private static void LearnNetwork() throws IOException {
         System.out.print("\n\tEnter file with data examples for the network to learn: ");
         String filename = scanner.nextLine();
-
         System.out.print("\tMaximum iterations: ");
         int maxIterations = scanner.nextInt();
-
         System.out.print("\tMaximum error: ");
         double maxError = 0.001;//scanner.nextDouble();
-
         System.out.print("\tLearning rate: ");
         float learningRate = 0.01f;//scanner.nextFloat();
 
-        CreateNeuralNetwork(filename, maxIterations, maxError, learningRate, true);
+        CreateNeuralNetwork(filename, Utils.NUM_HIDDEN_LAYERS, maxIterations, maxError, learningRate, true);
     }
 
     /**
@@ -99,22 +96,16 @@ public class Main {
         if(selectedNetworkName == null)
             return;
 
-        FileReader fr = new FileReader(Utils.PERFORMANCE_FOLDER + selectedNetworkName + ".txt");
-        BufferedReader br = new BufferedReader(fr);
-        String line;
+        String bestRules = GetBestRules(selectedNetworkName);
+        String[] msgSplit = bestRules.split(" ");
 
-        line = br.readLine();
-        String[] msgSplit = line.split(" ");
-
-        int maxIterations = Integer.parseInt(msgSplit[0]);
-        double maxError = Double.parseDouble(msgSplit[1]);
-        float learningRate = Float.parseFloat(msgSplit[2]);
-
-        br.close();
-        fr.close();
+        int hiddenNodesAmount = Integer.parseInt(msgSplit[0]);
+        int maxIterations = Integer.parseInt(msgSplit[1]);
+        double maxError = Double.parseDouble(msgSplit[2]);
+        float learningRate = Float.parseFloat(msgSplit[3]);
 
         System.out.println("\tApplying best rules:\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
-        CreateNeuralNetwork(selectedNetworkName, maxIterations, maxError, learningRate, true);
+        CreateNeuralNetwork(selectedNetworkName, hiddenNodesAmount, maxIterations, maxError, learningRate, true);
     }
 
     private static void BruteForce() throws IOException {
@@ -123,10 +114,40 @@ public class Main {
             return;
 
         for(float learningRate = Utils.LEARNING_RATE_INCREMENT; learningRate <= 0.9f; learningRate += 0.3f) {
-            CreateNeuralNetwork(selectedNetworkName, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
+            CreateNeuralNetwork(selectedNetworkName, Utils.NUM_HIDDEN_LAYERS, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
             TestNeuralNetwork(selectedNetworkName, false);
             System.out.println("\t\tCreated network with learning rate = '" + learningRate + "'.");
         }
+
+        String bestRules = GetBestRules(selectedNetworkName);
+        String[] msgSplit = bestRules.split(" ");
+        float learningRate = Float.parseFloat(msgSplit[2]);
+
+        for(int numHiddenNodes = 5; numHiddenNodes <= 15; numHiddenNodes++) {
+            CreateNeuralNetwork(selectedNetworkName, numHiddenNodes, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
+            TestNeuralNetwork(selectedNetworkName, false);
+            System.out.println("\t\tCreated network with '" + numHiddenNodes + "' hidden nodes.");
+        }
+    }
+
+    /**
+     * Opens the performance file of the respective network and returns the best rules for it.
+     * @param neuralNetworkName
+     * @return
+     * @throws IOException
+     */
+    private static String GetBestRules(String neuralNetworkName) throws IOException {
+        FileReader fr = new FileReader(Utils.PERFORMANCE_FOLDER + neuralNetworkName + ".txt");
+        BufferedReader br = new BufferedReader(fr);
+        String line;
+
+        line = br.readLine();
+        String[] msgSplit = line.split(" ");
+
+        br.close();
+        fr.close();
+
+        return msgSplit[0] + " " + msgSplit[1] + " " + msgSplit[2];
     }
 
     /**
@@ -137,7 +158,7 @@ public class Main {
      * @param learningRate
      * @throws IOException
      */
-    private static void CreateNeuralNetwork(String networkName, int maxIterations, double maxError, float learningRate, boolean displayResults) throws IOException {
+    private static void CreateNeuralNetwork(String networkName, int hiddenNodesAmount, int maxIterations, double maxError, float learningRate, boolean displayResults) throws IOException {
         Expression expression = new Expression(networkName);
         DataSet learnDataSet = new DataSet(expression.GetFramesCount(), 1);
 
@@ -145,7 +166,7 @@ public class Main {
         for(int i = 0; i < trainFramesAmount; i++)
             learnDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
 
-        _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, expression.GetFramesCount(), maxIterations, maxError, learningRate);
+        _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, expression.GetFramesCount(), hiddenNodesAmount, maxIterations, maxError, learningRate);
         neuralNetwork.LearnDataSet(learnDataSet, displayResults);
         neuralNetwork.SaveNeuralNetwork(networkName);
 
