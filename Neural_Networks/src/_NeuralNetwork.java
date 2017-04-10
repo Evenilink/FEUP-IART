@@ -50,15 +50,19 @@ public class _NeuralNetwork {
         this.learningRate = learningRate;
     }
 
-    public void LearnDataSet(DataSet dataSet) {
-        System.out.println("\tNeural network started learning.");
+    public void LearnDataSet(DataSet dataSet, boolean displayResults) {
+        if(displayResults)
+            System.out.println("\tNeural network started learning.");
         perceptron.learn(dataSet, backPropagation);
-        System.out.println("\tNeural network has finished learning.\n");
+        if(displayResults)
+            System.out.println("\tNeural network has finished learning.\n");
     }
 
-    public void TestNeuralNetwork(DataSet dataSet) throws IOException {
+    public void TestNeuralNetwork(DataSet dataSet, boolean displayResults) throws IOException {
         ArrayList<Double> diffArray = new ArrayList<>();
-        System.out.println("\n\tNeural network started calculating.");
+
+        if(displayResults)
+            System.out.println("\n\tNeural network started calculating.");
 
         for(DataSetRow row : dataSet.getRows()) {
             perceptron.setInput(row.getInput());
@@ -69,7 +73,8 @@ public class _NeuralNetwork {
             double diff = actualOutput - desiredOutput;
             diffArray.add(diff);
 
-            System.out.println("\tDesired output: " + desiredOutput + " \t|\t Actual output: " + actualOutput + " \t|\t Difference: " + diff);
+            if(displayResults)
+                System.out.println("\tDesired output: " + desiredOutput + " \t|\t Actual output: " + actualOutput + " \t|\t Difference: " + diff);
         }
 
         double diffSum = 0;
@@ -77,7 +82,9 @@ public class _NeuralNetwork {
             diffSum += Math.abs(diffArray.get(i));
         performance = diffSum / diffArray.size();
 
-        System.out.println("\n\tAverage difference: " + performance + "\n");
+        if(displayResults)
+            System.out.println("\n\tAverage difference: " + performance + "\n");
+
         SaveResultToFile();
     }
 

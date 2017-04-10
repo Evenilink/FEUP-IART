@@ -3,7 +3,7 @@ public class Utils {
     public static final int NUM_OUTPUT_LAYER = 1;
     public static final int NUM_HIDDEN_LAYERS = 10;
 
-    public static final String EXPRESSION_FOLDER = "data/";
+    public static final String EXPRESSION_FOLDER = "data/facial_examples/";
     public static final String TRAINED_NETWORK_FOLDER = "trained_networks/";
     public static final String PERFORMANCE_FOLDER = "data/performance/";
 
@@ -16,4 +16,6 @@ public class Utils {
     public static final float LEARNING_RATE = 0.01f;
 
     public static final float PERCENTAGE_TO_TRAIN = 0.8f;
+
+    public static final float LEARNING_RATE_INCREMENT = 0.05f;
 }
