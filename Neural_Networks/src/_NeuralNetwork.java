@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +38,6 @@ public class _NeuralNetwork {
         backPropagation.setMaxError(maxError);
         backPropagation.setLearningRate(learningRate);
         isLoaded = false;
-        System.out.println("Neural network ready.");
     }
 
     public _NeuralNetwork() {
@@ -53,8 +51,9 @@ public class _NeuralNetwork {
     }
 
     public void LearnDataSet(DataSet dataSet) {
-        System.out.println("Neural network started learning.");
+        System.out.println("\tNeural network started learning.");
         perceptron.learn(dataSet, backPropagation);
+        System.out.println("\tNeural network has finished learning.\n");
     }
 
     public void TestNeuralNetwork(DataSet dataSet) throws IOException {
@@ -97,24 +96,24 @@ public class _NeuralNetwork {
         return name;
     }
 
-    /**
-     * Appends the new back propagation rules at the end of the corresponding file.
-     * @throws IOException
-     */
     private void SaveResultToFile() throws IOException {
         // If the network was loaded, there's no need to write to the file, since it's already been tested.
         if(isLoaded)
             return;
 
+        // Creates file if it doesn't exists.
         File file = new File(Utils.PERFORMANCE_FOLDER + name + ".txt");
         file.createNewFile();
+
         String str = maxIterations + " " + maxError + " " + learningRate + " " + performance;
+
 
         FileReader fr = new FileReader(Utils.PERFORMANCE_FOLDER + name + ".txt");
         BufferedReader br = new BufferedReader(fr);
         String line;
         int i = 0;
 
+        // Detects where to put the current back propagation rules in the file, since the top most rules are the best for this network.
         while((line = br.readLine()) != null) {
             String[] msgSplit = line.split(" ");
             double filePerformance = Double.parseDouble(msgSplit[3]);
