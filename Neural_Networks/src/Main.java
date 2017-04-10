@@ -18,6 +18,10 @@ public class Main {
         Menu();
     }
 
+    /**
+     * Loads the created networks to the hash map, so that they can be tested without having to create them again.
+     * @throws IOException
+     */
     private static void LoadNetworks() throws IOException {
         File folder = new File(Utils.TRAINED_NETWORK_FOLDER);
         File[] files = folder.listFiles();
@@ -30,6 +34,10 @@ public class Main {
         }
     }
 
+    /**
+     * Friendly user interface.
+     * @throws IOException
+     */
     private static void Menu() throws IOException {
         System.out.println("*** NEURAL NETWORKS ***\n");
 
@@ -50,6 +58,10 @@ public class Main {
         System.out.println("Goodbye user.");
     }
 
+    /**
+     * Creates a new network and makes it learn.
+     * @throws IOException
+     */
     private static void LearnNetwork() throws IOException {
         System.out.print("\n\tEnter file with data examples for the network to learn: ");
         String filename = scanner.nextLine();
@@ -66,6 +78,10 @@ public class Main {
         CreateNeuralNetwork(filename, maxIterations, maxError, learningRate);
     }
 
+    /**
+     * Tests a networks and outputs the results to the console.
+     * @throws IOException
+     */
     private static void TestNetwork() throws IOException {
         String selectedNetworkName = ListLoadedNetworks();
         if(selectedNetworkName == null)
@@ -81,6 +97,10 @@ public class Main {
         neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(testDataSet);
     }
 
+    /**
+     * Applies to the specified network the best possible rules in the corresponding file (which are displayed at the top of the file).
+     * @throws IOException
+     */
     private static void ApplyBestRules() throws IOException {
         String selectedNetworkName = ListLoadedNetworks();
         if(selectedNetworkName == null)
