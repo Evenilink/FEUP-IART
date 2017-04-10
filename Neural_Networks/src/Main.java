@@ -1,6 +1,7 @@
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 
+import javax.rmi.CORBA.Util;
 import java.io.IOException;
 
 public class Main {
@@ -13,14 +14,19 @@ public class Main {
         String filename = args[0];
 
         Expression expression = new Expression(filename);
-        DataSet dataSet = new DataSet(expression.GetFramesCount(), 1);
+        DataSet learnDataSet = new DataSet(expression.GetFramesCount(), 1);
 
-        for(int i = 0; i < expression.size(); i++)
-            dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
+        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
+        for(int i = 0; i < trainFramesAmount; i++)
+            learnDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
+
+        DataSet testDataSet = new DataSet(expression.GetFramesCount(), 1);
+        for(int i = trainFramesAmount; i < expression.size(); i++)
+            testDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
 
         _NeuralNetwork neuralNetwork = new _NeuralNetwork(expression.GetFramesCount());
-        neuralNetwork.LearnDataSet(dataSet);
-        neuralNetwork.TestNeuralNetwork(dataSet);
+        neuralNetwork.LearnDataSet(learnDataSet);
+        neuralNetwork.TestNeuralNetwork(testDataSet);
         neuralNetwork.SaveNeuralNetwork(filename);
     }
 }
