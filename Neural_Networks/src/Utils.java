@@ -1,6 +1,7 @@
 public class Utils {
 
-    public static final int NUM_OUTPUT_LAYER = 1;
+    public static final int NUM_INPUT_NODES = 200;
+    public static final int NUM_OUTPUT_NODES = 1;
 
     public static final String EXPRESSION_FOLDER = "data/facial_examples/";
     public static final String TRAINED_NETWORK_FOLDER = "trained_networks/";

@@ -18,7 +18,6 @@ public class Expression {
     private double yMin;
 
     private int size;
-    private int framesCount;
 
     public Expression(String datasetName) throws IOException {
         frames = new ArrayList<>();
@@ -29,14 +28,6 @@ public class Expression {
         this.ParseDatapoints(Utils.EXPRESSION_FOLDER + datasetName + "_datapoints.txt");
         this.ParseTargets(Paths.get(Utils.EXPRESSION_FOLDER + datasetName + "_targets.txt"));
         this.size = Math.min(frames.size(), results.size());
-
-        this.framesCount = 0;
-        String s = frames.get(0);
-        do {
-            s = s.substring(s.indexOf(" ") + 1);
-            this.framesCount++;
-        } while(s.contains(" "));
-        this.framesCount++;
     }
 
     private void ParseDatapoints(String filepath) throws IOException {
@@ -113,9 +104,5 @@ public class Expression {
 
     public int size() {
         return size;
-    }
-
-    public int GetFramesCount() {
-        return framesCount;
     }
 }

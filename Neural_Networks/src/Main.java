@@ -72,7 +72,8 @@ public class Main {
         System.out.print("\tLearning rate: ");
         float learningRate = 0.01f;//scanner.nextFloat();
 
-        CreateNeuralNetwork(filename, Utils.NUM_HIDDEN_LAYERS, maxIterations, maxError, learningRate, true);
+        DataSet learningDataSet = CreateDataSet(filename, true);
+        CreateNeuralNetwork(filename,learningDataSet, Utils.NUM_HIDDEN_LAYERS, maxIterations, maxError, learningRate, true);
     }
 
     /**
@@ -84,7 +85,8 @@ public class Main {
         if(selectedNetworkName == null)
             return;
 
-        TestNeuralNetwork(selectedNetworkName, true);
+        DataSet trainDataSet = CreateDataSet(selectedNetworkName, false);
+        neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(trainDataSet, true);
     }
 
     /**
@@ -105,7 +107,8 @@ public class Main {
         float learningRate = Float.parseFloat(msgSplit[3]);
 
         System.out.println("\tApplying best rules:\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
-        CreateNeuralNetwork(selectedNetworkName, hiddenNodesAmount, maxIterations, maxError, learningRate, true);
+        DataSet learningDataSet = CreateDataSet(selectedNetworkName, true);
+        CreateNeuralNetwork(selectedNetworkName, learningDataSet, hiddenNodesAmount, maxIterations, maxError, learningRate, true);
     }
 
     private static void BruteForce() throws IOException {
@@ -113,9 +116,11 @@ public class Main {
         if(selectedNetworkName == null)
             return;
 
+        DataSet learnDataSet = CreateDataSet(selectedNetworkName, true);
+
         for(float learningRate = Utils.LEARNING_RATE_INCREMENT; learningRate <= 0.9f; learningRate += 0.3f) {
-            CreateNeuralNetwork(selectedNetworkName, Utils.NUM_HIDDEN_LAYERS, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
-            TestNeuralNetwork(selectedNetworkName, false);
+            CreateNeuralNetwork(selectedNetworkName, learnDataSet, Utils.NUM_HIDDEN_LAYERS, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
+            neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(learnDataSet, true);
             System.out.println("\t\tCreated network with learning rate = '" + learningRate + "'.");
         }
 
@@ -124,8 +129,8 @@ public class Main {
         float learningRate = Float.parseFloat(msgSplit[2]);
 
         for(int numHiddenNodes = 5; numHiddenNodes <= 15; numHiddenNodes++) {
-            CreateNeuralNetwork(selectedNetworkName, numHiddenNodes, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
-            TestNeuralNetwork(selectedNetworkName, false);
+            CreateNeuralNetwork(selectedNetworkName, learnDataSet, numHiddenNodes, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
+            neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(learnDataSet, true);
             System.out.println("\t\tCreated network with '" + numHiddenNodes + "' hidden nodes.");
         }
     }
@@ -147,7 +152,24 @@ public class Main {
         br.close();
         fr.close();
 
-        return msgSplit[0] + " " + msgSplit[1] + " " + msgSplit[2];
+        return msgSplit[0] + " " + msgSplit[1] + " " + msgSplit[2] + " " + msgSplit[3];
+    }
+
+    private static DataSet CreateDataSet(String networkName, boolean isLearningSet) throws IOException {
+        Expression expression = new Expression(networkName);
+        DataSet dataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
+
+        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
+
+        if(isLearningSet) {
+            for (int i = 0; i < trainFramesAmount; i++)
+                dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
+        } else {
+            for(int i = trainFramesAmount; i < expression.size(); i++)
+                dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
+        }
+
+        return dataSet;
     }
 
     /**
@@ -158,16 +180,9 @@ public class Main {
      * @param learningRate
      * @throws IOException
      */
-    private static void CreateNeuralNetwork(String networkName, int hiddenNodesAmount, int maxIterations, double maxError, float learningRate, boolean displayResults) throws IOException {
-        Expression expression = new Expression(networkName);
-        DataSet learnDataSet = new DataSet(expression.GetFramesCount(), 1);
-
-        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
-        for(int i = 0; i < trainFramesAmount; i++)
-            learnDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
-
-        _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, expression.GetFramesCount(), hiddenNodesAmount, maxIterations, maxError, learningRate);
-        neuralNetwork.LearnDataSet(learnDataSet, displayResults);
+    private static void CreateNeuralNetwork(String networkName, DataSet learningDataSet, int hiddenNodesAmount, int maxIterations, double maxError, float learningRate, boolean displayResults) throws IOException {
+        _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, Utils.NUM_INPUT_NODES, hiddenNodesAmount, maxIterations, maxError, learningRate);
+        neuralNetwork.LearnDataSet(learningDataSet, displayResults);
         neuralNetwork.SaveNeuralNetwork(networkName);
 
         // If a previous neural network of the same name exists, it's replaced by the just created one.
@@ -202,22 +217,5 @@ public class Main {
         System.out.print("\n\tSelect a network to test: ");
         int networkToTest = scanner.nextInt(); scanner.nextLine();
         return neuralNetworkNames.get(networkToTest-1);
-    }
-
-    /**
-     * Tests a neural network.
-     * @param neuralNetworkName
-     * @param displayResults
-     * @throws IOException
-     */
-    private static void TestNeuralNetwork(String neuralNetworkName, boolean displayResults) throws IOException {
-        Expression expression = new Expression(neuralNetworkName);
-        DataSet testDataSet = new DataSet(expression.GetFramesCount(), 1);
-        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
-
-        for(int i = trainFramesAmount; i < expression.size(); i++)
-            testDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
-
-        neuralNetworks.get(neuralNetworkName).TestNeuralNetwork(testDataSet, displayResults);
     }
 }

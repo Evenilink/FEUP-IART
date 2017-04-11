@@ -32,7 +32,7 @@ public class _NeuralNetwork {
 
     public _NeuralNetwork(String name, int inputNodesAmount, int hiddenNodesCount, int maxIterations, double maxError, float learningRate) {
         this.name = name;
-        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, inputNodesAmount, hiddenNodesCount, Utils.NUM_OUTPUT_LAYER);
+        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, inputNodesAmount, hiddenNodesCount, Utils.NUM_OUTPUT_NODES);
         SetBackPropagationRules(hiddenNodesCount, maxIterations, maxError, learningRate);
         backPropagation = new BackPropagation();
         backPropagation.setMaxIterations(maxIterations);
