@@ -11,12 +11,11 @@ public class Utils {
     public static final int VERTICAL_RESOLUTION = 480;
     public static final int MAX_DEEPTH = 4000;
 
-    public static final int MAX_ITERATIONS = 5000;
-    public static final double MAX_ERROR = 0.0007;
+    public static final int DEFAULT_MAX_ITERATIONS = 5000;
+    public static final double DEFAULT_MAX_ERROR = 0.0007;
     public static final float LEARNING_RATE = 0.01f;
-    public static final int NUM_HIDDEN_LAYERS = 5;
-
-    public static final float PERCENTAGE_TO_TRAIN = 0.8f;
+    public static final int DEFAULT_NUM_HIDDEN_LAYERS = 5;
 
     public static final float LEARNING_RATE_INCREMENT = 0.05f;
+    public static final float PERCENTAGE_TO_TRAIN = 0.8f;
 }

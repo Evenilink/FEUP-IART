@@ -1,6 +1,4 @@
 import org.neuroph.core.NeuralNetwork;
-import org.neuroph.core.data.DataSet;
-import org.neuroph.core.data.DataSetRow;
 
 import java.io.*;
 import java.util.*;
@@ -24,15 +22,17 @@ public class Main {
      * @throws IOException
      */
     private static void LoadNetworks() throws IOException {
+        System.out.println("Loading networks...");
+
         File folder = new File(Utils.TRAINED_NETWORK_FOLDER);
         File[] files = folder.listFiles();
 
         for(int i = 0; i < files.length; i++) {
             String fileName = files[i].getName();
-            _NeuralNetwork neuralNetwork = new _NeuralNetwork();
-            neuralNetwork.LoadNeuralNetwork(fileName);
+            _NeuralNetwork neuralNetwork = new _NeuralNetwork(fileName);
             neuralNetworks.put(fileName, neuralNetwork);
         }
+        System.out.println("Networks Loaded!\n");
     }
 
     /**
@@ -75,8 +75,7 @@ public class Main {
         System.out.print("\tNumber of hidden nodes: ");
         int numHiddenNodes = scanner.nextInt();
 
-        DataSet learningDataSet = CreateDataSet(filename, true);
-        CreateNeuralNetwork(filename, learningDataSet, numHiddenNodes, maxIterations, maxError, learningRate, true);
+        CreateNeuralNetwork(filename, numHiddenNodes, maxIterations, maxError, learningRate, true);
     }
 
     /**
@@ -88,8 +87,7 @@ public class Main {
         if(selectedNetworkName == null)
             return;
 
-        DataSet trainDataSet = CreateDataSet(selectedNetworkName, false);
-        neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(trainDataSet, true);
+        neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(true);
     }
 
     /**
@@ -110,8 +108,7 @@ public class Main {
         float learningRate = Float.parseFloat(msgSplit[3]);
 
         System.out.println("\tApplying best rules:\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
-        DataSet learningDataSet = CreateDataSet(selectedNetworkName, true);
-        CreateNeuralNetwork(selectedNetworkName, learningDataSet, hiddenNodesAmount, maxIterations, maxError, learningRate, true);
+        CreateNeuralNetwork(selectedNetworkName, hiddenNodesAmount, maxIterations, maxError, learningRate, true);
     }
 
     private static void BruteForce() throws IOException {
@@ -119,12 +116,9 @@ public class Main {
         if(selectedNetworkName == null)
             return;
 
-        DataSet learnDataSet = CreateDataSet(selectedNetworkName, true);
-
         // Searches the best learning rate.
         for(float learningRate = 0.0f; learningRate <= 0.95f; learningRate += Utils.LEARNING_RATE_INCREMENT) {
-            CreateNeuralNetwork(selectedNetworkName, learnDataSet, Utils.NUM_HIDDEN_LAYERS, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
-            neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(learnDataSet, false);
+            CreateNeuralNetwork(selectedNetworkName, Utils.DEFAULT_NUM_HIDDEN_LAYERS, Utils.DEFAULT_MAX_ITERATIONS, Utils.DEFAULT_MAX_ERROR, learningRate, false);
             System.out.println("\t\tCreated network with learning rate = '" + learningRate + "'.");
         }
 
@@ -135,9 +129,8 @@ public class Main {
         // Searches the best number of hidden nodes.
         // Formula: number of input nodes * number of hidden nodes < number of examples
         int numHiddenNodes = 2;
-        while(Utils.NUM_INPUT_NODES * numHiddenNodes < learnDataSet.getRows().size()) {
-            CreateNeuralNetwork(selectedNetworkName, learnDataSet, numHiddenNodes, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
-            neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(learnDataSet, false);
+        while(Utils.NUM_INPUT_NODES * numHiddenNodes < neuralNetworks.get(selectedNetworkName).getLearningDateSet().getRows().size()) {
+            CreateNeuralNetwork(selectedNetworkName, numHiddenNodes, Utils.DEFAULT_MAX_ITERATIONS, Utils.DEFAULT_MAX_ERROR, learningRate, false);
             System.out.println("\t\tCreated network with '" + numHiddenNodes + "' hidden nodes.");
             numHiddenNodes++;
         }
@@ -163,23 +156,6 @@ public class Main {
         return msgSplit[0] + " " + msgSplit[1] + " " + msgSplit[2] + " " + msgSplit[3];
     }
 
-    private static DataSet CreateDataSet(String networkName, boolean isLearningSet) throws IOException {
-        Expression expression = new Expression(networkName);
-        DataSet dataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
-
-        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
-
-        if(isLearningSet) {
-            for (int i = 0; i < trainFramesAmount; i++)
-                dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
-        } else {
-            for(int i = trainFramesAmount; i < expression.size(); i++)
-                dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
-        }
-
-        return dataSet;
-    }
-
     /**
      * Creates a new neural network.
      * @param networkName
@@ -188,15 +164,16 @@ public class Main {
      * @param learningRate
      * @throws IOException
      */
-    private static void CreateNeuralNetwork(String networkName, DataSet learningDataSet, int hiddenNodesAmount, int maxIterations, double maxError, float learningRate, boolean displayResults) throws IOException {
+    private static void CreateNeuralNetwork(String networkName, int hiddenNodesAmount, int maxIterations, double maxError, float learningRate, boolean displayResults) throws IOException {
         _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, Utils.NUM_INPUT_NODES, hiddenNodesAmount, maxIterations, maxError, learningRate);
-        neuralNetwork.LearnDataSet(learningDataSet, displayResults);
+        neuralNetwork.LearnDataSet(displayResults);
         neuralNetwork.SaveNeuralNetwork(networkName);
+        neuralNetwork.TestNeuralNetwork(false);
 
         // If a previous neural network of the same name exists, it's replaced by the just created one.
-        if(neuralNetworks.containsKey(neuralNetwork.GetName()))
-            neuralNetworks.remove(neuralNetwork.GetName());
-        neuralNetworks.put(neuralNetwork.GetName(), neuralNetwork);
+        if(neuralNetworks.containsKey(neuralNetwork.getName()))
+            neuralNetworks.remove(neuralNetwork.getName());
+        neuralNetworks.put(neuralNetwork.getName(), neuralNetwork);
     }
 
     /**
@@ -220,6 +197,7 @@ public class Main {
             String name = entry.getKey();
             neuralNetworkNames.add(name);
             System.out.println("\t" + i + " - " + name);
+            i++;
         }
 
         System.out.print("\n\tSelect a network to test: ");

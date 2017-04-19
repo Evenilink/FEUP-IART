@@ -23,6 +23,7 @@ public class _NeuralNetwork {
     private MultiLayerPerceptron perceptron;
     private String name;
     private DataSet learningDateSet;
+    private DataSet testDataSet;
     private double performance;
     private boolean isLoaded;
 
@@ -32,6 +33,16 @@ public class _NeuralNetwork {
     private int hiddenNodesCount;
     private float learnTime;
 
+    /**
+     * Neural network creation constructor.
+     * @param name
+     * @param inputNodesAmount
+     * @param hiddenNodesCount
+     * @param maxIterations
+     * @param maxError
+     * @param learningRate
+     * @throws IOException
+     */
     public _NeuralNetwork(String name, int inputNodesAmount, int hiddenNodesCount, int maxIterations, double maxError, float learningRate) throws IOException {
         this.name = name;
         perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, inputNodesAmount, hiddenNodesCount, Utils.NUM_OUTPUT_NODES);
@@ -41,12 +52,49 @@ public class _NeuralNetwork {
         backPropagation.setMaxError(maxError);
         backPropagation.setLearningRate(learningRate);
         isLoaded = false;
+
+        // Loading data sets.
+        Expression expression = new Expression(name);
+        learningDateSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
+        testDataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
+        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
+
+        for (int i = 0; i < trainFramesAmount; i++)
+            learningDateSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
+        for(int i = trainFramesAmount; i < expression.size(); i++)
+            testDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
     }
 
-    public _NeuralNetwork() {
+    /**
+     * Neural Network loading constructor.
+     * @param name
+     * @throws IOException
+     */
+    public _NeuralNetwork(String name) throws IOException {
         isLoaded = true;
+
+        perceptron = (MultiLayerPerceptron) NeuralNetwork.createFromFile(Utils.TRAINED_NETWORK_FOLDER + name);
+        this.name = name;
+
+        // Loading data sets.
+        Expression expression = new Expression(name);
+        learningDateSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
+        testDataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
+        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
+
+        for (int i = 0; i < trainFramesAmount; i++)
+            learningDateSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
+        for(int i = trainFramesAmount; i < expression.size(); i++)
+            testDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
     }
 
+    /**
+     * Sets the back propagation algorithm rules.
+     * @param hiddenNodesCount
+     * @param maxIterations
+     * @param maxError
+     * @param learningRate
+     */
     public void SetBackPropagationRules(int hiddenNodesCount, int maxIterations, double maxError, float learningRate) {
         this.hiddenNodesCount =hiddenNodesCount;
         this.learningRate = learningRate;
@@ -54,31 +102,40 @@ public class _NeuralNetwork {
         this.maxError = maxError;
     }
 
-    public void LearnDataSet(DataSet dataSet, boolean displayResults) {
+    /**
+     * Makes the neural network learn the data set.
+     * @param displayResults
+     */
+    public void LearnDataSet(boolean displayResults) {
         if(displayResults)
             System.out.println("\tNeural network started learning.");
 
         long timeStart = System.currentTimeMillis();
-        perceptron.learn(dataSet, backPropagation);
+        perceptron.learn(learningDateSet, backPropagation);
         learnTime = (System.currentTimeMillis() - timeStart) / 1000f;
 
         if(displayResults)
             System.out.println("\tNeural network has finished learning.\n");
     }
 
-    public void TestNeuralNetwork(DataSet dataSet, boolean displayResults) throws IOException {
+    /**
+     * Tests the neural network using the test data set and saves the information to a file.
+     * @param displayResults
+     * @throws IOException
+     */
+    public void TestNeuralNetwork(boolean displayResults) throws IOException {
         ArrayList<Double> diffArray = new ArrayList<>();
 
         if(displayResults)
             System.out.println("\n\tNeural network started calculating.");
 
-        for(DataSetRow row : dataSet.getRows()) {
+        for(DataSetRow row : testDataSet.getRows()) {
             perceptron.setInput(row.getInput());
             perceptron.calculate();
 
             double desiredOutput = Double.parseDouble(Arrays.toString(row.getDesiredOutput()).replace("[", "").replace("]", ""));
             double actualOutput = Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
-            double diff = actualOutput - desiredOutput;
+            double diff = Math.abs(actualOutput - desiredOutput);
             diffArray.add(diff);
 
             if(displayResults)
@@ -87,7 +144,7 @@ public class _NeuralNetwork {
 
         double diffSum = 0;
         for(int i = 0; i < diffArray.size(); i++)
-            diffSum += Math.abs(diffArray.get(i));
+            diffSum += diffArray.get(i);
         performance = diffSum / diffArray.size();
 
         if(displayResults)
@@ -96,21 +153,20 @@ public class _NeuralNetwork {
         SaveResultToFile();
     }
 
+    /**
+     * Saves the neural network as a neural network file.
+     * @param filename
+     */
     public void SaveNeuralNetwork(String filename) {
         if(name == null)
             name = filename;
         perceptron.save(Utils.TRAINED_NETWORK_FOLDER + filename);
     }
 
-    public void LoadNeuralNetwork(String filename) {
-        perceptron = (MultiLayerPerceptron) NeuralNetwork.createFromFile(Utils.TRAINED_NETWORK_FOLDER + filename);
-        name = filename;
-    }
-
-    public String GetName() {
-        return name;
-    }
-
+    /**
+     * Writes all the information to the corresponding file.
+     * @throws IOException
+     */
     private void SaveResultToFile() throws IOException {
         // If the network was loaded, there's no need to write to the file, since it's already been tested.
         if(isLoaded)
@@ -165,11 +221,27 @@ public class _NeuralNetwork {
         Files.write(path, lines, StandardCharsets.UTF_8);
     }
 
+    /**
+     * Name getter.
+     * @return
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Learning data set getter.
+     * @return
+     */
+    public DataSet getLearningDateSet() {
+        return learningDateSet;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof _NeuralNetwork) {
             _NeuralNetwork nn = (_NeuralNetwork) obj;
-            return (nn.GetName().equals(name));
+            return (nn.getName().equals(name));
         }
         return false;
     }
