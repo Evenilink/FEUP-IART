@@ -13,6 +13,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         scanner = new Scanner(System.in);
+        scanner.useLocale(Locale.US);       // Forces '.' to be the decimal delimiter.
         neuralNetworks = new HashMap<>();
         LoadNetworks();
         Menu();
@@ -68,12 +69,14 @@ public class Main {
         System.out.print("\tMaximum iterations: ");
         int maxIterations = scanner.nextInt();
         System.out.print("\tMaximum error: ");
-        double maxError = 0.001;//scanner.nextDouble();
+        double maxError = scanner.nextDouble();
         System.out.print("\tLearning rate: ");
-        float learningRate = 0.01f;//scanner.nextFloat();
+        float learningRate = scanner.nextFloat();
+        System.out.print("\tNumber of hidden nodes: ");
+        int numHiddenNodes = scanner.nextInt();
 
         DataSet learningDataSet = CreateDataSet(filename, true);
-        CreateNeuralNetwork(filename,learningDataSet, Utils.NUM_HIDDEN_LAYERS, maxIterations, maxError, learningRate, true);
+        CreateNeuralNetwork(filename, learningDataSet, numHiddenNodes, maxIterations, maxError, learningRate, true);
     }
 
     /**
@@ -118,9 +121,10 @@ public class Main {
 
         DataSet learnDataSet = CreateDataSet(selectedNetworkName, true);
 
-        for(float learningRate = Utils.LEARNING_RATE_INCREMENT; learningRate <= 0.9f; learningRate += 0.3f) {
+        // Searches the best learning rate.
+        for(float learningRate = 0.0f; learningRate <= 0.95f; learningRate += Utils.LEARNING_RATE_INCREMENT) {
             CreateNeuralNetwork(selectedNetworkName, learnDataSet, Utils.NUM_HIDDEN_LAYERS, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
-            neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(learnDataSet, true);
+            neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(learnDataSet, false);
             System.out.println("\t\tCreated network with learning rate = '" + learningRate + "'.");
         }
 
@@ -128,10 +132,14 @@ public class Main {
         String[] msgSplit = bestRules.split(" ");
         float learningRate = Float.parseFloat(msgSplit[2]);
 
-        for(int numHiddenNodes = 5; numHiddenNodes <= 15; numHiddenNodes++) {
+        // Searches the best number of hidden nodes.
+        // Formula: number of input nodes * number of hidden nodes < number of examples
+        int numHiddenNodes = 2;
+        while(Utils.NUM_INPUT_NODES * numHiddenNodes < learnDataSet.getRows().size()) {
             CreateNeuralNetwork(selectedNetworkName, learnDataSet, numHiddenNodes, Utils.MAX_ITERATIONS, Utils.MAX_ERROR, learningRate, false);
-            neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(learnDataSet, true);
+            neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(learnDataSet, false);
             System.out.println("\t\tCreated network with '" + numHiddenNodes + "' hidden nodes.");
+            numHiddenNodes++;
         }
     }
 

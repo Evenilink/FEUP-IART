@@ -22,6 +22,7 @@ public class _NeuralNetwork {
     private BackPropagation backPropagation;
     private MultiLayerPerceptron perceptron;
     private String name;
+    private DataSet learningDateSet;
     private double performance;
     private boolean isLoaded;
 
@@ -29,8 +30,9 @@ public class _NeuralNetwork {
     private double maxError;
     private float learningRate;
     private int hiddenNodesCount;
+    private float learnTime;
 
-    public _NeuralNetwork(String name, int inputNodesAmount, int hiddenNodesCount, int maxIterations, double maxError, float learningRate) {
+    public _NeuralNetwork(String name, int inputNodesAmount, int hiddenNodesCount, int maxIterations, double maxError, float learningRate) throws IOException {
         this.name = name;
         perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, inputNodesAmount, hiddenNodesCount, Utils.NUM_OUTPUT_NODES);
         SetBackPropagationRules(hiddenNodesCount, maxIterations, maxError, learningRate);
@@ -55,7 +57,11 @@ public class _NeuralNetwork {
     public void LearnDataSet(DataSet dataSet, boolean displayResults) {
         if(displayResults)
             System.out.println("\tNeural network started learning.");
+
+        long timeStart = System.currentTimeMillis();
         perceptron.learn(dataSet, backPropagation);
+        learnTime = (System.currentTimeMillis() - timeStart) / 1000f;
+
         if(displayResults)
             System.out.println("\tNeural network has finished learning.\n");
     }
@@ -114,7 +120,7 @@ public class _NeuralNetwork {
         File file = new File(Utils.PERFORMANCE_FOLDER + name + ".txt");
         file.createNewFile();
 
-        String str = hiddenNodesCount + " " + maxIterations + " " + maxError + " " + learningRate + " " + performance;
+        String str = hiddenNodesCount + " " + maxIterations + " " + maxError + " " + learningRate + " " + performance + " " + learnTime;
 
         FileReader fr = new FileReader(Utils.PERFORMANCE_FOLDER + name + ".txt");
         BufferedReader br = new BufferedReader(fr);
