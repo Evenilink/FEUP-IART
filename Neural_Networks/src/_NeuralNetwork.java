@@ -4,6 +4,7 @@ import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.BackPropagation;
 import org.neuroph.util.TransferFunctionType;
+import org.neuroph.util.data.sample.SubSampling;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,17 +53,7 @@ public class _NeuralNetwork {
         backPropagation.setMaxError(maxError);
         backPropagation.setLearningRate(learningRate);
         isLoaded = false;
-
-        // Loading data sets.
-        Expression expression = new Expression(name);
-        learningDateSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
-        testDataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
-        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
-
-        for (int i = 0; i < trainFramesAmount; i++)
-            learningDateSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
-        for(int i = trainFramesAmount; i < expression.size(); i++)
-            testDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
+        LoadDataSets(name);
     }
 
     /**
@@ -72,20 +63,21 @@ public class _NeuralNetwork {
      */
     public _NeuralNetwork(String name) throws IOException {
         isLoaded = true;
-
         perceptron = (MultiLayerPerceptron) NeuralNetwork.createFromFile(Utils.TRAINED_NETWORK_FOLDER + name);
         this.name = name;
+        LoadDataSets(name);
+    }
 
-        // Loading data sets.
+    private void LoadDataSets(String name) throws IOException {
         Expression expression = new Expression(name);
-        learningDateSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
-        testDataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
-        int trainFramesAmount = Math.round(expression.getFrames().size() * Utils.PERCENTAGE_TO_TRAIN);
+        DataSet dataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
+        for(int i = 0; i < expression.size(); i++)
+            dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
 
-        for (int i = 0; i < trainFramesAmount; i++)
-            learningDateSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
-        for(int i = trainFramesAmount; i < expression.size(); i++)
-            testDataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
+        SubSampling subSampling = new SubSampling(Utils.PERCENTAGE_TO_TRAIN, 100 - Utils.PERCENTAGE_TO_TRAIN);
+        List<DataSet> dataSets = subSampling.sample(dataSet);
+        learningDateSet = dataSets.get(0);
+        testDataSet = dataSets.get(1);
     }
 
     /**
@@ -95,7 +87,7 @@ public class _NeuralNetwork {
      * @param maxError
      * @param learningRate
      */
-    public void SetBackPropagationRules(int hiddenNodesCount, int maxIterations, double maxError, float learningRate) {
+    private void SetBackPropagationRules(int hiddenNodesCount, int maxIterations, double maxError, float learningRate) {
         this.hiddenNodesCount =hiddenNodesCount;
         this.learningRate = learningRate;
         this.maxIterations = maxIterations;

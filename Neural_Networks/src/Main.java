@@ -64,8 +64,17 @@ public class Main {
      * @throws IOException
      */
     private static void LearnNetwork() throws IOException {
-        System.out.print("\n\tEnter file with data examples for the network to learn: ");
-        String filename = scanner.nextLine();
+        String filename;
+        while(true) {
+            System.out.print("\n\tWrite an expression name with data examples for the network to learn: ");
+            filename = scanner.nextLine();
+
+            File f = new File(Utils.EXPRESSION_FOLDER + "a_" + filename + "_datapoints.txt");
+            if(!f.exists())
+                System.out.println("\tThere are no examples available for '" + filename + "' expression.");
+            else break;
+        }
+
         System.out.print("\tMaximum iterations: ");
         int maxIterations = scanner.nextInt();
         System.out.print("\tMaximum error: ");
