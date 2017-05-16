@@ -22,17 +22,18 @@ public class Main {
      * @throws IOException
      */
     private static void LoadNetworks() throws IOException {
-        System.out.println("Loading networks...");
-
         File folder = new File(Utils.TRAINED_NETWORK_FOLDER);
         File[] files = folder.listFiles();
 
-        for(int i = 0; i < files.length; i++) {
-            String fileName = files[i].getName();
-            _NeuralNetwork neuralNetwork = new _NeuralNetwork(fileName);
-            neuralNetworks.put(fileName, neuralNetwork);
+        if(files.length > 0) {
+            System.out.println("Loading networks...");
+            for(int i = 0; i < files.length; i++) {
+                String fileName = files[i].getName();
+                _NeuralNetwork neuralNetwork = new _NeuralNetwork(fileName);
+                neuralNetworks.put(fileName, neuralNetwork);
+            }
+            System.out.println("Networks Loaded!\n");
         }
-        System.out.println("Networks Loaded!\n");
     }
 
     /**
