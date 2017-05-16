@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +18,7 @@ public class Expression {
     private double yMin;
     private int size;
 
-    private String formattedFrame;
+    private ArrayList<Double> coords;
 
     public Expression(String datasetName, boolean isDatasetName) throws IOException {
         xCoords = new ArrayList<>();
@@ -32,8 +31,10 @@ public class Expression {
             this.ParseDatapoints(Utils.EXPRESSION_FOLDER + datasetName + "_datapoints.txt");
             this.ParseTargets(Paths.get(Utils.EXPRESSION_FOLDER + datasetName + "_targets.txt"));
             this.size = Math.min(frames.size(), results.size());
-        } else
+        } else {
+            coords = new ArrayList<>();
             ParseFrame(datasetName);
+        }
     }
 
     private void ParseFrame(String frame) {
@@ -45,11 +46,10 @@ public class Expression {
             yCoords.add(y);
         }
 
-        formattedFrame = GetFormattedFrame();
+        BuildCoords();
     }
 
-    private String GetFormattedFrame() {
-        double[] values = new double[4];
+    private void BuildCoords() {
         double xMax = 0, xMin = Double.MAX_VALUE;
         double yMax = 0, yMin = Double.MAX_VALUE;
 
@@ -64,21 +64,13 @@ public class Expression {
                 yMin = yCoords.get(i);
         }
 
-        values[0] = xMax;
-        values[1] = xMin;
-        values[2] = yMax;
-        values[3] = yMin;
-
-        String formatted = "";
         for(int i = 0; i < xCoords.size(); i++) {
-            formatted += (xCoords.get(i) - xMin) / (xMax - xMin) + " " + (yCoords.get(i) - yMin) / (yMax - yMin);
-            if(i != xCoords.size() - 1)
-                formatted += " ";
+            coords.add((xCoords.get(i) - xMin) / (xMax - xMin));
+            coords.add((yCoords.get(i) - yMin) / (yMax - yMin));
         }
 
         xCoords.clear();
         yCoords.clear();
-        return formatted;
     }
 
     private void ParseDatapoints(String filepath) throws IOException {
@@ -153,8 +145,8 @@ public class Expression {
         return results;
     }
 
-    public String getFormattedFrame() {
-        return formattedFrame;
+    public ArrayList<Double> getCoords() {
+        return coords;
     }
 
     public int size() {

@@ -113,8 +113,8 @@ public class Main {
             Map.Entry<String, _NeuralNetwork> entry = it.next();
             _NeuralNetwork neuralNetwork = entry.getValue();
 
-            Double performance = neuralNetwork.TestNeuralNetwork(expression);
-            networksPerformance.put(neuralNetwork.getName(), performance);
+            Double output = neuralNetwork.TestNeuralNetwork(expression);
+            networksPerformance.put(neuralNetwork.getName(), output);
         }
 
         double maxPerformance = 0;

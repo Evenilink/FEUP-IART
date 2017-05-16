@@ -146,7 +146,7 @@ public class _NeuralNetwork {
     }
 
     public Double TestNeuralNetwork(Expression expression) {
-        perceptron.setInput(new DataSetRow(expression.getFormattedFrame(), "0").getInput());
+        perceptron.setInput(new DataSetRow(expression.getCoords()).getInput());
         perceptron.calculate();
         return Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
     }
