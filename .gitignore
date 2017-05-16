@@ -5,6 +5,8 @@
 Neural_Networks/.idea/**/workspace.xml
 Neural_Networks/.idea/**/tasks.xml
 Neural_Networks/.idea/dictionaries
+neuroph-2.93b
+.gitignore
 
 # Sensitive or high-churn files:
 Neural_Networks/.idea/**/dataSources/
@@ -13,6 +15,9 @@ Neural_Networks/.idea/**/dataSources.xml
 Neural_Networks/.idea/**/dataSources.local.xml
 Neural_Networks/.idea/**/sqlDataSources.xml
 Neural_Networks/.idea/**/dynamic.xml
+Neural_Networks/.idea/*
+Neural_Networks/out/*
+Neural_Networks/*.iml
 .idea/**/uiDesigner.xml
 
 # Gradle:
