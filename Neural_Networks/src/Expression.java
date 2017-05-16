@@ -24,6 +24,18 @@ public class Expression {
         xCoords = new ArrayList<>();
         yCoords = new ArrayList<>();
 
+        if (datasetName.startsWith("a_") || datasetName.startsWith("b_")) {
+            this.ParseDatapoints(Utils.EXPRESSION_FOLDER + datasetName + "_datapoints.txt");
+            this.ParseTargets(Paths.get(Utils.EXPRESSION_FOLDER + datasetName + "_targets.txt"));
+        } else {
+            this.ParseDatapoints(Utils.EXPRESSION_FOLDER + "a_" + datasetName + "_datapoints.txt");
+            this.ParseDatapoints(Utils.EXPRESSION_FOLDER + "b_" + datasetName + "_datapoints.txt");
+            this.ParseTargets(Paths.get(Utils.EXPRESSION_FOLDER + "a_" + datasetName + "_targets.txt"));
+            this.ParseTargets(Paths.get(Utils.EXPRESSION_FOLDER + "b_" + datasetName + "_targets.txt"));
+        }
+
+        this.size = Math.min(frames.size(), results.size());
+
         if(isDatasetName) {
             frames = new ArrayList<>();
             results = new ArrayList<>();
@@ -128,7 +140,7 @@ public class Expression {
             }
         }
     }
-
+    
     private void ParseTargets(Path fileLoc) {
         try {
             Files.lines(fileLoc).forEach(s -> results.add(s));
