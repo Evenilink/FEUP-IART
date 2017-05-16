@@ -43,15 +43,16 @@ public class Main {
         System.out.println("*** NEURAL NETWORKS ***\n");
 
         do {
-            System.out.print("1 - Create and make a Network learn\n2 - Test Network\n3 - Apply the best rules to a network\n4 - Brute force a neural network to find the best performance\n0 - Exit\n\nPlease select a sub-menu: ");
+            System.out.print("1 - Create and make a Network learn\n2 - Test Network\n3 - Test an example\n4 - Apply the best rules to a network\n5 - Brute force a neural network to find the best performance\n0 - Exit\n\nPlease select a sub-menu: ");
             userInput = scanner.nextInt();
             scanner.nextLine();     // Get's rid of the newline.
 
             switch (userInput) {
                 case 1: LearnNetwork(); break;
                 case 2: TestNetwork(); break;
-                case 3: ApplyBestRules(); break;
-                case 4: BruteForce(); break;
+                case 3: TestExample(); break;
+                case 4: ApplyBestRules(); break;
+                case 5: BruteForce(); break;
                 default: break;
             }
         } while(userInput != 0);
@@ -97,6 +98,43 @@ public class Main {
             return;
 
         neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(true);
+    }
+
+    private static void TestExample() throws IOException {
+        System.out.print("\n\tCopy your example here: ");
+        String inputTest = scanner.nextLine();
+        System.out.println();
+
+        Expression expression = new Expression(inputTest, false);
+        HashMap<String, Double> networksPerformance = new HashMap<>();
+        Iterator<Map.Entry<String, _NeuralNetwork>> it = neuralNetworks.entrySet().iterator();
+        while(it.hasNext()) {
+            @SuppressWarnings("unchecked")
+            Map.Entry<String, _NeuralNetwork> entry = it.next();
+            _NeuralNetwork neuralNetwork = entry.getValue();
+
+            Double performance = neuralNetwork.TestNeuralNetwork(expression);
+            networksPerformance.put(neuralNetwork.getName(), performance);
+        }
+
+        double maxPerformance = 0;
+        String facialExpression = null;
+        Iterator<Map.Entry<String, Double>> itr = networksPerformance.entrySet().iterator();
+        while(itr.hasNext()) {
+            @SuppressWarnings("unchecked")
+            Map.Entry<String, Double> entry = itr.next();
+
+            Double performance = entry.getValue();
+            String networkName = entry.getKey();
+            if(performance > maxPerformance) {
+                maxPerformance = performance;
+                facialExpression = networkName;
+            }
+
+            System.out.println("\t" + networkName + ": " + performance);
+        }
+
+        System.out.println("\tThe entered input belongs to the facial expression '" + facialExpression + "' with output '" + maxPerformance + "'.\n");
     }
 
     /**

@@ -17,18 +17,68 @@ public class Expression {
     private double yMax;
     private double xMin;
     private double yMin;
-
     private int size;
 
-    public Expression(String datasetName) throws IOException {
-        frames = new ArrayList<>();
-        results = new ArrayList<>();
+    private String formattedFrame;
+
+    public Expression(String datasetName, boolean isDatasetName) throws IOException {
         xCoords = new ArrayList<>();
         yCoords = new ArrayList<>();
 
-        this.ParseDatapoints(Utils.EXPRESSION_FOLDER + datasetName + "_datapoints.txt");
-        this.ParseTargets(Paths.get(Utils.EXPRESSION_FOLDER + datasetName + "_targets.txt"));
-        this.size = Math.min(frames.size(), results.size());
+        if(isDatasetName) {
+            frames = new ArrayList<>();
+            results = new ArrayList<>();
+
+            this.ParseDatapoints(Utils.EXPRESSION_FOLDER + datasetName + "_datapoints.txt");
+            this.ParseTargets(Paths.get(Utils.EXPRESSION_FOLDER + datasetName + "_targets.txt"));
+            this.size = Math.min(frames.size(), results.size());
+        } else
+            ParseFrame(datasetName);
+    }
+
+    private void ParseFrame(String frame) {
+        String[] frameSplit = frame.split(" ");
+        for(int i = 0; i < frameSplit.length; i += 3) {
+            double x = Float.parseFloat(frameSplit[i]);
+            double y = Float.parseFloat(frameSplit[i+1]);
+            xCoords.add(x);
+            yCoords.add(y);
+        }
+
+        formattedFrame = GetFormattedFrame();
+    }
+
+    private String GetFormattedFrame() {
+        double[] values = new double[4];
+        double xMax = 0, xMin = Double.MAX_VALUE;
+        double yMax = 0, yMin = Double.MAX_VALUE;
+
+        for(int i = 0; i < xCoords.size(); i++) {
+            if(xCoords.get(i) > xMax)
+                xMax = xCoords.get(i);
+            if(xCoords.get(i) < xMin)
+                xMin = xCoords.get(i);
+            if(yCoords.get(i) > yMax)
+                yMax = yCoords.get(i);
+            if(yCoords.get(i) < yMin)
+                yMin = yCoords.get(i);
+        }
+
+        values[0] = xMax;
+        values[1] = xMin;
+        values[2] = yMax;
+        values[3] = yMin;
+
+        String formatted = "";
+        for(int i = 0; i < xCoords.size(); i++) {
+            formatted += (xCoords.get(i) - xMin) / (xMax - xMin) + " " + (yCoords.get(i) - yMin) / (yMax - yMin);
+            if(i != xCoords.size() - 1)
+                formatted += " ";
+        }
+
+        xCoords.clear();
+        yCoords.clear();
+        return formatted;
     }
 
     private void ParseDatapoints(String filepath) throws IOException {
@@ -101,6 +151,10 @@ public class Expression {
 
     public ArrayList<String> getResults() {
         return results;
+    }
+
+    public String getFormattedFrame() {
+        return formattedFrame;
     }
 
     public int size() {

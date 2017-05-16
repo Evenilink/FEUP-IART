@@ -2,36 +2,36 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff:
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/dictionaries
+Neural_Networks/.idea/**/workspace.xml
+Neural_Networks/.idea/**/tasks.xml
+Neural_Networks/.idea/dictionaries
 
 # Sensitive or high-churn files:
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.xml
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
+Neural_Networks/.idea/**/dataSources/
+Neural_Networks/.idea/**/dataSources.ids
+Neural_Networks/.idea/**/dataSources.xml
+Neural_Networks/.idea/**/dataSources.local.xml
+Neural_Networks/.idea/**/sqlDataSources.xml
+Neural_Networks/.idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 
 # Gradle:
-.idea/**/gradle.xml
-.idea/**/libraries
+Neural_Networks/.idea/**/gradle.xml
+Neural_Networks/.idea/**/libraries
 
 # CMake
 cmake-build-debug/
 
 # Mongo Explorer plugin:
-.idea/**/mongoSettings.xml
+Neural_Networks/.idea/**/mongoSettings.xml
 
 ## File-based project format:
-*.iws
+Neural_Networks/*.iws
 
 ## Plugin-specific files:
 
 # IntelliJ
-/out/
+Neural_Networks//out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -40,7 +40,7 @@ cmake-build-debug/
 atlassian-ide-plugin.xml
 
 # Cursive Clojure plugin
-.idea/replstate.xml
+Neural_Networks/.idea/replstate.xml
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml

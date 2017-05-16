@@ -69,7 +69,7 @@ public class _NeuralNetwork {
     }
 
     private void LoadDataSets(String name) throws IOException {
-        Expression expression = new Expression(name);
+        Expression expression = new Expression(name, true);
         DataSet dataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
         for(int i = 0; i < expression.size(); i++)
             dataSet.addRow(new DataSetRow(expression.getFrames().get(i), expression.getResults().get(i)));
@@ -143,6 +143,12 @@ public class _NeuralNetwork {
             System.out.println("\n\tAverage difference: " + performance + "\n");
 
         SaveResultToFile();
+    }
+
+    public Double TestNeuralNetwork(Expression expression) {
+        perceptron.setInput(new DataSetRow(expression.getFormattedFrame(), "0").getInput());
+        perceptron.calculate();
+        return Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
     }
 
     /**
@@ -227,6 +233,10 @@ public class _NeuralNetwork {
      */
     public DataSet getLearningDateSet() {
         return learningDateSet;
+    }
+
+    public double getPerformance() {
+        return performance;
     }
 
     @Override
