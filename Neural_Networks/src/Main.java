@@ -25,7 +25,7 @@ public class Main {
         File folder = new File(Utils.TRAINED_NETWORK_FOLDER);
         File[] files = folder.listFiles();
 
-        if(files.length > 0) {
+        if(files != null && files.length > 0) {
             System.out.println("Loading networks...");
             for(int i = 0; i < files.length; i++) {
                 String fileName = files[i].getName();
