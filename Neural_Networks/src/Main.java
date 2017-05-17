@@ -72,7 +72,8 @@ public class Main {
             filename = scanner.nextLine();
 
             File f = new File(Utils.EXPRESSION_FOLDER + "a_" + filename + "_datapoints.txt");
-            if(!f.exists())
+            File f1 = new File(Utils.EXPRESSION_FOLDER + filename + "_datapoints.txt");
+            if(!f.exists() && !f1.exists())
                 System.out.println("\tThere are no examples available for '" + filename + "' expression.");
             else break;
         }
