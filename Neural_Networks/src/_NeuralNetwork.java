@@ -115,11 +115,16 @@ public class _NeuralNetwork {
      * @param displayResults
      * @throws IOException
      */
-    public void TestNeuralNetwork(boolean displayResults) throws IOException {
-        ArrayList<Double> diffArray = new ArrayList<>();
-
+    public double TestNeuralNetwork(boolean displayResults, DataSet dataSet) throws IOException {
         if(displayResults)
             System.out.println("\n\tNeural network started calculating.");
+
+        ArrayList<Double> diffArray = new ArrayList<>();
+        DataSet tmpDataSet = null;
+        if(dataSet != null) {
+            tmpDataSet = testDataSet;
+            testDataSet = dataSet;
+        }
 
         for(DataSetRow row : testDataSet.getRows()) {
             perceptron.setInput(row.getInput());
@@ -139,16 +144,35 @@ public class _NeuralNetwork {
             diffSum += diffArray.get(i);
         performance = diffSum / diffArray.size();
 
+        if(dataSet != null)
+            testDataSet = tmpDataSet;
         if(displayResults)
             System.out.println("\n\tNumber of tests: " + diffArray.size() + ", average difference: " + performance + "\n");
 
-        SaveResultToFile();
+        return performance;
     }
 
     public Double TestNeuralNetwork(Expression expression) {
         perceptron.setInput(new DataSetRow(expression.getCoords()).getInput());
         perceptron.calculate();
         return Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
+    }
+
+    public double TestNeuralNetwork(DataSet dataSet) {
+        ArrayList<Double> diffArray = new ArrayList<>();
+
+        for(DataSetRow row : dataSet.getRows()) {
+            perceptron.setInput(row.getInput());
+            perceptron.calculate();
+            double output = Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
+            diffArray.add(output);
+        }
+
+        double diffSum = 0;
+        for(int i = 0; i < diffArray.size(); i++)
+            diffSum += diffArray.get(i);
+
+        return diffSum / diffArray.size();
     }
 
     /**
@@ -165,7 +189,7 @@ public class _NeuralNetwork {
      * Writes all the information to the corresponding file.
      * @throws IOException
      */
-    private void SaveResultToFile() throws IOException {
+    public void SaveResultToFile() throws IOException {
         // If the network was loaded, there's no need to write to the file, since it's already been tested.
         if(isLoaded)
             return;

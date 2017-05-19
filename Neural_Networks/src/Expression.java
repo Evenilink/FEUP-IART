@@ -44,6 +44,15 @@ public class Expression {
         }
     }
 
+    public Expression(String filePath) throws IOException {
+        xCoords = new ArrayList<>();
+        yCoords = new ArrayList<>();
+        frames = new ArrayList<>();
+        results = new ArrayList<>();
+        ParseDatapoints(filePath);
+        size = frames.size();
+    }
+
     private void ParseFrame(String frame) {
         String[] frameSplit = frame.split(" ");
         for(int i = 0; i < frameSplit.length; i += 3) {

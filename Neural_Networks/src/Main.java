@@ -1,4 +1,7 @@
 import org.neuroph.core.NeuralNetwork;
+import org.neuroph.core.data.DataSet;
+import org.neuroph.core.data.DataSetRow;
+import org.neuroph.util.data.sample.SubSampling;
 
 import java.io.*;
 import java.util.*;
@@ -44,7 +47,7 @@ public class Main {
         System.out.println("*** NEURAL NETWORKS ***\n");
 
         do {
-            System.out.print("1 - Create and make a Network learn\n2 - Test Network\n3 - Test an example\n4 - Apply the best rules to a network\n5 - Brute force a neural network to find the best performance\n0 - Exit\n\nPlease select a sub-menu: ");
+            System.out.print("1 - Create and make a Network learn\n2 - Test Network\n3 - Test an example\n4 - Test a file\n5 - Apply the best rules to a network\n6 - Brute force a neural network to find the best performance\n0 - Exit\n\nPlease select a sub-menu: ");
             userInput = scanner.nextInt();
             scanner.nextLine();     // Get's rid of the newline.
 
@@ -52,8 +55,9 @@ public class Main {
                 case 1: LearnNetwork(); break;
                 case 2: TestNetwork(); break;
                 case 3: TestExample(); break;
-                case 4: ApplyBestRules(); break;
-                case 5: BruteForce(); break;
+                case 4: TestFile(); break;
+                case 5: ApplyBestRules(); break;
+                case 6: BruteForce(); break;
                 default: break;
             }
         } while(userInput != 0);
@@ -99,7 +103,9 @@ public class Main {
         if(selectedNetworkName == null)
             return;
 
-        neuralNetworks.get(selectedNetworkName).TestNeuralNetwork(true);
+        _NeuralNetwork neuralNetwork = neuralNetworks.get(selectedNetworkName);
+        neuralNetwork.TestNeuralNetwork(true, null);
+        neuralNetwork.SaveResultToFile();
     }
 
     private static void TestExample() throws IOException {
@@ -137,6 +143,46 @@ public class Main {
         }
 
         System.out.println("\tThe entered input belongs to the facial expression '" + facialExpression + "' with output '" + maxPerformance + "'.\n");
+    }
+
+    private static void TestFile() throws IOException {
+        System.out.print("\n\tSelect a file: ");
+        String filePath = scanner.nextLine();
+
+        Expression expression = new Expression(filePath);
+        DataSet dataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
+        for(int i = 0; i < expression.size(); i++)
+            dataSet.addRow(new DataSetRow(expression.getFrames().get(i), "-1"));
+
+        HashMap<String, Double> networksPerformance = new HashMap<>();
+        Iterator<Map.Entry<String, _NeuralNetwork>> it = neuralNetworks.entrySet().iterator();
+        while(it.hasNext()) {
+            @SuppressWarnings("unchecked")
+            Map.Entry<String, _NeuralNetwork> entry = it.next();
+            _NeuralNetwork neuralNetwork = entry.getValue();
+
+            Double output = neuralNetwork.TestNeuralNetwork(dataSet);
+            networksPerformance.put(neuralNetwork.getName(), output);
+        }
+
+        double maxPerformance = 0;
+        String facialExpression = null;
+        Iterator<Map.Entry<String, Double>> itr = networksPerformance.entrySet().iterator();
+        while(itr.hasNext()) {
+            @SuppressWarnings("unchecked")
+            Map.Entry<String, Double> entry = itr.next();
+
+            Double performance = entry.getValue();
+            String networkName = entry.getKey();
+            if(performance > maxPerformance) {
+                maxPerformance = performance;
+                facialExpression = networkName;
+            }
+
+            System.out.println("\t" + networkName + ": " + performance);
+        }
+
+        System.out.println("\tThe entered file has frames belonging to the facial expression '" + facialExpression + "' with output '" + maxPerformance + "'.\n");
     }
 
     /**
@@ -217,7 +263,8 @@ public class Main {
         _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, Utils.NUM_INPUT_NODES, hiddenNodesAmount, maxIterations, maxError, learningRate);
         neuralNetwork.LearnDataSet(displayResults);
         neuralNetwork.SaveNeuralNetwork(networkName);
-        neuralNetwork.TestNeuralNetwork(false);
+        neuralNetwork.TestNeuralNetwork(false, null);
+        neuralNetwork.SaveResultToFile();
 
         // If a previous neural network of the same name exists, it's replaced by the just created one.
         if(neuralNetworks.containsKey(neuralNetwork.getName()))
