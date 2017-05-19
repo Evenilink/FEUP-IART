@@ -140,7 +140,7 @@ public class _NeuralNetwork {
         performance = diffSum / diffArray.size();
 
         if(displayResults)
-            System.out.println("\n\tAverage difference: " + performance + "\n");
+            System.out.println("\n\tNumber of tests: " + diffArray.size() + ", average difference: " + performance + "\n");
 
         SaveResultToFile();
     }
