@@ -1,6 +1,7 @@
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
+import org.neuroph.core.learning.error.ErrorFunction;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.BackPropagation;
 import org.neuroph.util.TransferFunctionType;
@@ -49,6 +50,7 @@ public class _NeuralNetwork {
         perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, inputNodesAmount, hiddenNodesCount, Utils.NUM_OUTPUT_NODES);
         SetBackPropagationRules(hiddenNodesCount, maxIterations, maxError, learningRate);
         backPropagation = new BackPropagation();
+        backPropagation.setNeuralNetwork(perceptron);
         backPropagation.setMaxIterations(maxIterations);
         backPropagation.setMaxError(maxError);
         backPropagation.setLearningRate(learningRate);
@@ -109,8 +111,9 @@ public class _NeuralNetwork {
         perceptron.learn(learningDateSet, backPropagation);
         learnTime = (System.currentTimeMillis() - timeStart) / 1000f;
 
+        double networkError = backPropagation.getTotalNetworkError();
         if(displayResults)
-            System.out.println("\tNeural network has finished learning.\n");
+            System.out.println("\tNeural network has finished learning. Total network error: " + networkError + "\n");
     }
 
     /**
@@ -135,8 +138,9 @@ public class _NeuralNetwork {
 
             double desiredOutput = Double.parseDouble(Arrays.toString(row.getDesiredOutput()).replace("[", "").replace("]", ""));
             double actualOutput = Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
-            double diff = Math.abs(actualOutput - desiredOutput);
-            diffArray.add(diff);
+            double diff = desiredOutput - actualOutput;
+            double diffA = Math.pow(diff, 2);
+            diffArray.add(diffA);
 
             if(displayResults)
                 System.out.println("\tDesired output: " + desiredOutput + " \t|\t Actual output: " + actualOutput + " \t|\t Difference: " + diff);

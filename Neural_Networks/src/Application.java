@@ -201,7 +201,7 @@ public class Application {
         double maxError = Double.parseDouble(msgSplit[2]);
         float learningRate = Float.parseFloat(msgSplit[3]);
 
-        System.out.println("\tApplying best rules:\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
+        System.out.println("\tApplying best rules:\n\t\tNumber of hidden nodes: " + hiddenNodesAmount + "\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
         CreateNeuralNetwork(selectedNetworkName, hiddenNodesAmount, maxIterations, maxError, learningRate, true);
     }
 
@@ -211,7 +211,7 @@ public class Application {
             return;
 
         // Searches the best learning rate.
-        for(float learningRate = 0.0f; learningRate <= 0.95f; learningRate += Utils.LEARNING_RATE_INCREMENT) {
+        for(float learningRate = 0.0f; learningRate <= 0.8f; learningRate += Utils.LEARNING_RATE_INCREMENT) {
             CreateNeuralNetwork(selectedNetworkName, Utils.DEFAULT_NUM_HIDDEN_LAYERS, Utils.DEFAULT_MAX_ITERATIONS, Utils.DEFAULT_MAX_ERROR, learningRate, false);
             System.out.println("\t\tCreated network with learning rate = '" + learningRate + "'.");
         }
@@ -223,11 +223,11 @@ public class Application {
         // Searches the best number of hidden nodes.
         // Formula: number of input nodes * number of hidden nodes < number of examples
         int numHiddenNodes = 2;
-        while(Utils.NUM_INPUT_NODES * numHiddenNodes < neuralNetworks.get(selectedNetworkName).getLearningDateSet().getRows().size()) {
+        /*for(int numHiddenNodes = 2; numHiddenNodes < neuralNetworks.get(), )< neuralNetworks.get(selectedNetworkName).getLearningDateSet().getRows().size()) {
             CreateNeuralNetwork(selectedNetworkName, numHiddenNodes, Utils.DEFAULT_MAX_ITERATIONS, Utils.DEFAULT_MAX_ERROR, learningRate, false);
             System.out.println("\t\tCreated network with '" + numHiddenNodes + "' hidden nodes.");
             numHiddenNodes++;
-        }
+        }*/
     }
 
     /**

@@ -17,6 +17,6 @@ public class Utils {
     public static final float LEARNING_RATE = 0.01f;
     public static final int DEFAULT_NUM_HIDDEN_LAYERS = 5;
 
-    public static final float LEARNING_RATE_INCREMENT = 0.1f;
-    public static final int PERCENTAGE_TO_TRAIN = 45;
+    public static final float LEARNING_RATE_INCREMENT = 0.2f;
+    public static final int PERCENTAGE_TO_TRAIN = 80;
 }
