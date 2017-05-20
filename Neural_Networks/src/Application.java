@@ -262,7 +262,6 @@ public class Application {
         _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, Utils.NUM_INPUT_NODES, hiddenNodesAmount, maxIterations, maxError, learningRate);
         neuralNetwork.LearnDataSet(displayResults);
         neuralNetwork.SaveNeuralNetwork(networkName);
-        neuralNetwork.TestNeuralNetwork(false, null);
         neuralNetwork.SaveResultToFile();
 
         // If a previous neural network of the same name exists, it's replaced by the just created one.

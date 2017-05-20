@@ -35,6 +35,8 @@ public class _NeuralNetwork {
     private int hiddenNodesCount;
     private float learnTime;
 
+    private double networkError;
+
     /**
      * Neural network creation constructor.
      * @param name
@@ -111,7 +113,7 @@ public class _NeuralNetwork {
         perceptron.learn(learningDateSet, backPropagation);
         learnTime = (System.currentTimeMillis() - timeStart) / 1000f;
 
-        double networkError = backPropagation.getTotalNetworkError();
+        networkError = backPropagation.getTotalNetworkError();
         if(displayResults)
             System.out.println("\tNeural network has finished learning. Total network error: " + networkError + "\n");
     }
@@ -138,9 +140,8 @@ public class _NeuralNetwork {
 
             double desiredOutput = Double.parseDouble(Arrays.toString(row.getDesiredOutput()).replace("[", "").replace("]", ""));
             double actualOutput = Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
-            double diff = desiredOutput - actualOutput;
-            double diffA = Math.pow(diff, 2);
-            diffArray.add(diffA);
+            double diff = Math.pow(desiredOutput - actualOutput, 2);
+            diffArray.add(diff);
 
             if(displayResults)
                 System.out.println("\tDesired output: " + desiredOutput + " \t|\t Actual output: " + actualOutput + " \t|\t Difference: " + diff);
@@ -207,7 +208,7 @@ public class _NeuralNetwork {
         File file = new File(Utils.PERFORMANCE_FOLDER + name + ".txt");
         file.createNewFile();
 
-        String str = hiddenNodesCount + " " + maxIterations + " " + maxError + " " + learningRate + " " + performance + " " + learnTime;
+        String str = hiddenNodesCount + " " + maxIterations + " " + maxError + " " + learningRate + " " + networkError + " " + learnTime;
 
         FileReader fr = new FileReader(Utils.PERFORMANCE_FOLDER + name + ".txt");
         BufferedReader br = new BufferedReader(fr);
