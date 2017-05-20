@@ -1,54 +1,5 @@
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-
-# User-specific stuff:
-Neural_Networks/.idea/**/workspace.xml
-Neural_Networks/.idea/**/tasks.xml
-Neural_Networks/.idea/dictionaries
-neuroph-2.93b
-.gitignore
-
-# Sensitive or high-churn files:
-Neural_Networks/.idea/**/dataSources/
-Neural_Networks/.idea/**/dataSources.ids
-Neural_Networks/.idea/**/dataSources.xml
-Neural_Networks/.idea/**/dataSources.local.xml
-Neural_Networks/.idea/**/sqlDataSources.xml
-Neural_Networks/.idea/**/dynamic.xml
-Neural_Networks/.idea/*
-Neural_Networks/out/*
-Neural_Networks/*.iml
-.idea/**/uiDesigner.xml
-
-# Gradle:
-Neural_Networks/.idea/**/gradle.xml
-Neural_Networks/.idea/**/libraries
-
-# CMake
-cmake-build-debug/
-
-# Mongo Explorer plugin:
-Neural_Networks/.idea/**/mongoSettings.xml
-
-## File-based project format:
-Neural_Networks/*.iws
-
-## Plugin-specific files:
-
-# IntelliJ
-Neural_Networks//out/
-
-# mpeltonen/sbt-idea plugin
-.idea_modules/
-
-# JIRA plugin
-atlassian-ide-plugin.xml
-
-# Cursive Clojure plugin
-Neural_Networks/.idea/replstate.xml
-
-# Crashlytics plugin (for Android Studio and IntelliJ)
-com_crashlytics_export_strings.xml
-crashlytics.properties
-crashlytics-build.properties
-fabric.properties
+Neural_Networks/out/
+Neural_Networks/.idea/
+Neural_Networks/data/datasets/affirmative-learn
+Neural_Networks/data/
+Neural_Networks/trained_networks/
