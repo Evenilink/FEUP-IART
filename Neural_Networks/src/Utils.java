@@ -5,6 +5,7 @@ public class Utils {
 
     public static final String EXPRESSION_FOLDER = "data/facial_examples/";
     public static final String TRAINED_NETWORK_FOLDER = "trained_networks/";
+    public static final String DATASETS_FOLDER = "data/datasets/";
     public static final String PERFORMANCE_FOLDER = "data/performance/";
 
     public static final int HORIZONTAL_RESOLUTION = 640;

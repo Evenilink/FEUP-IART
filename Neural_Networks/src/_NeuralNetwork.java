@@ -53,7 +53,7 @@ public class _NeuralNetwork {
         backPropagation.setMaxError(maxError);
         backPropagation.setLearningRate(learningRate);
         isLoaded = false;
-        LoadDataSets(name);
+        CreateDataSets(name);
     }
 
     /**
@@ -65,10 +65,13 @@ public class _NeuralNetwork {
         isLoaded = true;
         perceptron = (MultiLayerPerceptron) NeuralNetwork.createFromFile(Utils.TRAINED_NETWORK_FOLDER + name);
         this.name = name;
-        LoadDataSets(name);
+
+        // Load datasets
+        learningDateSet = DataSet.load(Utils.DATASETS_FOLDER + name + "-learn");
+        testDataSet = DataSet.load(Utils.DATASETS_FOLDER + name + "-test");
     }
 
-    private void LoadDataSets(String name) throws IOException {
+    private void CreateDataSets(String name) throws IOException {
         Expression expression = new Expression(name, true);
         DataSet dataSet = new DataSet(Utils.NUM_INPUT_NODES, 1);
         for(int i = 0; i < expression.size(); i++)
@@ -78,6 +81,8 @@ public class _NeuralNetwork {
         List<DataSet> dataSets = subSampling.sample(dataSet);
         learningDateSet = dataSets.get(0);
         testDataSet = dataSets.get(1);
+        learningDateSet.save(Utils.DATASETS_FOLDER + name + "-learn");
+        testDataSet.save(Utils.DATASETS_FOLDER + name + "-test");
     }
 
     /**
