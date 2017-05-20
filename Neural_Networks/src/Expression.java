@@ -20,6 +20,15 @@ public class Expression {
 
     private ArrayList<Double> coords;
 
+    public Expression(String filePath) throws IOException {
+        xCoords = new ArrayList<>();
+        yCoords = new ArrayList<>();
+        frames = new ArrayList<>();
+        results = new ArrayList<>();
+        ParseDatapoints(filePath);
+        size = frames.size();
+    }
+
     public Expression(String datasetName, boolean isDatasetName) throws IOException {
         xCoords = new ArrayList<>();
         yCoords = new ArrayList<>();
@@ -42,15 +51,6 @@ public class Expression {
             coords = new ArrayList<>();
             ParseFrame(datasetName);
         }
-    }
-
-    public Expression(String filePath) throws IOException {
-        xCoords = new ArrayList<>();
-        yCoords = new ArrayList<>();
-        frames = new ArrayList<>();
-        results = new ArrayList<>();
-        ParseDatapoints(filePath);
-        size = frames.size();
     }
 
     private void ParseFrame(String frame) {
