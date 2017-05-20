@@ -81,8 +81,6 @@ public class _NeuralNetwork {
         List<DataSet> dataSets = subSampling.sample(dataSet);
         learningDateSet = dataSets.get(0);
         testDataSet = dataSets.get(1);
-        learningDateSet.save(Utils.DATASETS_FOLDER + name + "-learn");
-        testDataSet.save(Utils.DATASETS_FOLDER + name + "-test");
     }
 
     /**
@@ -188,6 +186,8 @@ public class _NeuralNetwork {
         if(name == null)
             name = filename;
         perceptron.save(Utils.TRAINED_NETWORK_FOLDER + filename);
+        learningDateSet.save(Utils.DATASETS_FOLDER + name + "-learn");
+        testDataSet.save(Utils.DATASETS_FOLDER + name + "-test");
     }
 
     /**
