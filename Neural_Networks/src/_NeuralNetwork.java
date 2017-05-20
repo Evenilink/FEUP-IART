@@ -1,3 +1,4 @@
+import org.neuroph.core.Layer;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
@@ -26,13 +27,11 @@ public class _NeuralNetwork {
     private String name;
     private DataSet learningDateSet;
     private DataSet testDataSet;
-    private double performance;
     private boolean isLoaded;
 
     private int maxIterations;
     private double maxError;
     private float learningRate;
-    private int hiddenNodesCount;
     private float learnTime;
 
     private double networkError;
@@ -40,17 +39,24 @@ public class _NeuralNetwork {
     /**
      * Neural network creation constructor.
      * @param name
-     * @param inputNodesAmount
-     * @param hiddenNodesCount
+     * @param hiddenLayers
      * @param maxIterations
      * @param maxError
      * @param learningRate
      * @throws IOException
      */
-    public _NeuralNetwork(String name, int inputNodesAmount, int hiddenNodesCount, int maxIterations, double maxError, float learningRate) throws IOException {
+    public _NeuralNetwork(String name, ArrayList<Integer> hiddenLayers, int maxIterations, double maxError, float learningRate) throws IOException {
         this.name = name;
-        perceptron = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, inputNodesAmount, hiddenNodesCount, Utils.NUM_OUTPUT_NODES);
-        SetBackPropagationRules(hiddenNodesCount, maxIterations, maxError, learningRate);
+
+        ArrayList<Integer> nodesInLayers = new ArrayList<>();
+        nodesInLayers.add(Utils.NUM_INPUT_NODES);
+        for(int i = 0; i < hiddenLayers.size(); i++)
+            nodesInLayers.add(hiddenLayers.get(i));
+        nodesInLayers.add(Utils.NUM_OUTPUT_NODES);
+
+        perceptron = new MultiLayerPerceptron(nodesInLayers, TransferFunctionType.SIGMOID);
+
+        SetBackPropagationRules(maxIterations, maxError, learningRate);
         backPropagation = new BackPropagation();
         backPropagation.setNeuralNetwork(perceptron);
         backPropagation.setMaxIterations(maxIterations);
@@ -89,13 +95,11 @@ public class _NeuralNetwork {
 
     /**
      * Sets the back propagation algorithm rules.
-     * @param hiddenNodesCount
      * @param maxIterations
      * @param maxError
      * @param learningRate
      */
-    private void SetBackPropagationRules(int hiddenNodesCount, int maxIterations, double maxError, float learningRate) {
-        this.hiddenNodesCount =hiddenNodesCount;
+    private void SetBackPropagationRules(int maxIterations, double maxError, float learningRate) {
         this.learningRate = learningRate;
         this.maxIterations = maxIterations;
         this.maxError = maxError;
@@ -107,7 +111,7 @@ public class _NeuralNetwork {
      */
     public void LearnDataSet(boolean displayResults) {
         if(displayResults)
-            System.out.println("\tNeural network started learning.");
+            System.out.println("\n\tNeural network started learning.");
 
         long timeStart = System.currentTimeMillis();
         perceptron.learn(learningDateSet, backPropagation);
@@ -150,14 +154,14 @@ public class _NeuralNetwork {
         double diffSum = 0;
         for(int i = 0; i < diffArray.size(); i++)
             diffSum += diffArray.get(i);
-        performance = diffSum / diffArray.size();
+        double meanError = diffSum / diffArray.size();
 
         if(dataSet != null)
             testDataSet = tmpDataSet;
         if(displayResults)
-            System.out.println("\n\tNumber of tests: " + diffArray.size() + ", average difference: " + performance + "\n");
+            System.out.println("\n\tNumber of tests: " + diffArray.size() + ", average error: " + meanError + "\n");
 
-        return performance;
+        return meanError;
     }
 
     public Double TestNeuralNetwork(Expression expression) {
@@ -176,6 +180,8 @@ public class _NeuralNetwork {
             diffArray.add(output);
         }
 
+        // TODO
+        // Calculate the error. It's wrong as it is.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         double diffSum = 0;
         for(int i = 0; i < diffArray.size(); i++)
             diffSum += diffArray.get(i);
@@ -208,7 +214,9 @@ public class _NeuralNetwork {
         File file = new File(Utils.PERFORMANCE_FOLDER + name + ".txt");
         file.createNewFile();
 
-        String str = hiddenNodesCount + " " + maxIterations + " " + maxError + " " + learningRate + " " + networkError + " " + learnTime;
+        String str = maxIterations + " " + maxError + " " + learningRate + " " + networkError + " " + learnTime;
+        for(int i = 1; i < perceptron.getLayersCount()-1; i++)
+            str += " " + (perceptron.getLayers()[i].getNeuronsCount()-1);
 
         FileReader fr = new FileReader(Utils.PERFORMANCE_FOLDER + name + ".txt");
         BufferedReader br = new BufferedReader(fr);
@@ -219,25 +227,31 @@ public class _NeuralNetwork {
         // Detects where to put the current back propagation rules in the file, since the top most rules are the best for this network.
         while((line = br.readLine()) != null) {
             String[] msgSplit = line.split(" ");
-            int fileHiddenNodesAmount = Integer.parseInt(msgSplit[0]);
-            int fileMaxIterations = Integer.parseInt(msgSplit[1]);
-            double fileMaxError = Double.parseDouble(msgSplit[2]);
-            float fileLearningRate = Float.parseFloat(msgSplit[3]);
-            double filePerformance = Double.parseDouble(msgSplit[4]);
+            //int fileHiddenNodesAmount = Integer.parseInt(msgSplit[0]);
+            int fileMaxIterations = Integer.parseInt(msgSplit[0]);
+            double fileMaxError = Double.parseDouble(msgSplit[1]);
+            float fileLearningRate = Float.parseFloat(msgSplit[2]);
+            double fileNetworkError = Double.parseDouble(msgSplit[3]);
 
-            // If the rules are the same but the performance is higher or equal, there's no need to write to the file.
-            if(fileHiddenNodesAmount == hiddenNodesCount &&
+            ArrayList<Integer> fileHiddenLayersNodes = new ArrayList<>();
+            for(int j = 5; j < msgSplit.length; j++) {
+                int hiddenLayerNodes = Integer.parseInt(msgSplit[j]);
+                fileHiddenLayersNodes.add(hiddenLayerNodes);
+            }
+
+            // If the rules are the same but the network error is higher or equal, there's no need to write to the file.
+            if(fileHiddenLayersNodes.size() == (perceptron.getLayersCount()-2) &&
                     fileMaxIterations == maxIterations &&
                     fileMaxError == maxError &&
                     fileLearningRate == learningRate) {
-                if(performance < filePerformance) {
+                if(networkError < fileNetworkError) {
                     replace = true;
                     break;
                 } else
                     return;
             }
 
-            if(performance < filePerformance)
+            if(networkError < fileNetworkError)
                 break;
             i++;
         }
@@ -259,18 +273,6 @@ public class _NeuralNetwork {
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * Learning data set getter.
-     * @return
-     */
-    public DataSet getLearningDateSet() {
-        return learningDateSet;
-    }
-
-    public double getPerformance() {
-        return performance;
     }
 
     @Override

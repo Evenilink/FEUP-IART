@@ -87,8 +87,24 @@ public class Application {
         double maxError = scanner.nextDouble();
         System.out.print("\tLearning rate: ");
         float learningRate = scanner.nextFloat();
-        System.out.print("\tNumber of hidden nodes: ");
-        int numHiddenNodes = scanner.nextInt();
+
+        int numHiddenLayers = -1;
+        while(numHiddenLayers < 1) {
+            System.out.print("\tNumber of hidden layers: ");
+            numHiddenLayers = scanner.nextInt();
+        }
+
+        ArrayList<Integer> numHiddenNodes = new ArrayList<>();
+        for(int i = 0; i < numHiddenLayers; i++) {
+            int hiddenNodes = -1;
+
+            while(hiddenNodes < 1) {
+                System.out.print("\tNumber of hidden nodes in hidden layer " + (i+1) + ": ");
+                hiddenNodes = scanner.nextInt();
+            }
+
+            numHiddenNodes.add(hiddenNodes);
+        }
 
         CreateNeuralNetwork(filename, numHiddenNodes, maxIterations, maxError, learningRate, true);
     }
@@ -196,13 +212,18 @@ public class Application {
         String bestRules = GetBestRules(selectedNetworkName);
         String[] msgSplit = bestRules.split(" ");
 
-        int hiddenNodesAmount = Integer.parseInt(msgSplit[0]);
-        int maxIterations = Integer.parseInt(msgSplit[1]);
-        double maxError = Double.parseDouble(msgSplit[2]);
-        float learningRate = Float.parseFloat(msgSplit[3]);
+        int maxIterations = Integer.parseInt(msgSplit[0]);
+        double maxError = Double.parseDouble(msgSplit[1]);
+        float learningRate = Float.parseFloat(msgSplit[2]);
 
-        System.out.println("\tApplying best rules:\n\t\tNumber of hidden nodes: " + hiddenNodesAmount + "\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
-        CreateNeuralNetwork(selectedNetworkName, hiddenNodesAmount, maxIterations, maxError, learningRate, true);
+        ArrayList<Integer> hiddenLayersNodes = new ArrayList<>();
+        for(int i = 3; i < msgSplit.length; i++) {
+            int hiddenLayerNodes = Integer.parseInt(msgSplit[i]);
+            hiddenLayersNodes.add(hiddenLayerNodes);
+        }
+
+        System.out.println("\tApplying best rules:\n\t\tNumber of hidden layers: " + hiddenLayersNodes.size() + "\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
+        CreateNeuralNetwork(selectedNetworkName, hiddenLayersNodes, maxIterations, maxError, learningRate, true);
     }
 
     private static void BruteForce() throws IOException {
@@ -212,13 +233,16 @@ public class Application {
 
         // Searches the best learning rate.
         for(float learningRate = 0.0f; learningRate <= 0.8f; learningRate += Utils.LEARNING_RATE_INCREMENT) {
-            CreateNeuralNetwork(selectedNetworkName, Utils.DEFAULT_NUM_HIDDEN_LAYERS, Utils.DEFAULT_MAX_ITERATIONS, Utils.DEFAULT_MAX_ERROR, learningRate, false);
+            //CreateNeuralNetwork(selectedNetworkName, Utils.DEFAULT_NUM_HIDDEN_LAYERS, Utils.DEFAULT_MAX_ITERATIONS, Utils.DEFAULT_MAX_ERROR, learningRate, false);
             System.out.println("\t\tCreated network with learning rate = '" + learningRate + "'.");
         }
 
         String bestRules = GetBestRules(selectedNetworkName);
         String[] msgSplit = bestRules.split(" ");
         float learningRate = Float.parseFloat(msgSplit[2]);
+
+        //TODO
+        // Fix this.
 
         // Searches the best number of hidden nodes.
         // Formula: number of input nodes * number of hidden nodes < number of examples
@@ -247,7 +271,11 @@ public class Application {
         br.close();
         fr.close();
 
-        return msgSplit[0] + " " + msgSplit[1] + " " + msgSplit[2] + " " + msgSplit[3];
+        String msg = msgSplit[0] + " " + msgSplit[1] + " " + msgSplit[2];
+        for(int i = 5; i < msgSplit.length; i++)
+            msg += " " + msgSplit[i];
+
+        return msg;
     }
 
     /**
@@ -258,8 +286,8 @@ public class Application {
      * @param learningRate
      * @throws IOException
      */
-    private static void CreateNeuralNetwork(String networkName, int hiddenNodesAmount, int maxIterations, double maxError, float learningRate, boolean displayResults) throws IOException {
-        _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, Utils.NUM_INPUT_NODES, hiddenNodesAmount, maxIterations, maxError, learningRate);
+    private static void CreateNeuralNetwork(String networkName, ArrayList<Integer> hiddenNodesLayerAmount, int maxIterations, double maxError, float learningRate, boolean displayResults) throws IOException {
+        _NeuralNetwork neuralNetwork = new _NeuralNetwork(networkName, hiddenNodesLayerAmount, maxIterations, maxError, learningRate);
         neuralNetwork.LearnDataSet(displayResults);
         neuralNetwork.SaveNeuralNetwork(networkName);
         neuralNetwork.SaveResultToFile();
