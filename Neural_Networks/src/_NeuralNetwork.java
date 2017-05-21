@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class _NeuralNetwork {
 
@@ -147,7 +148,7 @@ public class _NeuralNetwork {
         try{
             PrintWriter writer = new PrintWriter(Utils.LEARNING_ERROR_FOLDER + this.getName() + ".csv", "UTF-8");
             for (int i = 0; i < iterationErrors.size(); i++)
-                writer.println(i + ", " + iterationErrors.get(i));
+                writer.format(Locale.GERMANY,"%d, \"%f\"\n",i, iterationErrors.get(i));
             writer.close();
         } catch (IOException e) {
             System.err.println("Couldn't write iteration errors to file\n" + e.getLocalizedMessage());
