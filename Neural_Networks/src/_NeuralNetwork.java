@@ -130,7 +130,7 @@ public class _NeuralNetwork {
                 error = backPropagation.getPreviousEpochError();
                 iterationErrors.add(error);
                 if(displayResults)
-                    System.out.format("Iteration: %" + (maxIterations + "").length() + "d of %d - Error: %f of %f\n",
+                    System.out.format("\tIteration: %" + (maxIterations + "").length() + "d of %d - Error: %f of %f\n",
                         curIteration-1, maxIterations, error, maxError);
                 prevIteration = curIteration;
             }
@@ -140,7 +140,7 @@ public class _NeuralNetwork {
         iterationErrors.add(networkError);
 
         if(displayResults) {
-            System.out.format("Iteration: %" + (maxIterations + "").length() + "d of %d - Error: %f of %f\n",
+            System.out.format("\tIteration: %" + (maxIterations + "").length() + "d of %d - Error: %f of %f\n",
                     maxIterations, maxIterations, networkError, maxError);
             System.out.println("\tNeural network '" + name + "' has finished learning. Total network error: " + networkError + "\n");
         }
