@@ -46,17 +46,18 @@ public class Application {
         System.out.println("*** NEURAL NETWORKS ***\n");
 
         do {
-            System.out.print("1 - Create and make a Network learn\n2 - Test Network\n3 - Test an example\n4 - Test a file\n5 - Apply the best rules to a network\n6 - Brute force a neural network to find the best performance\n0 - Exit\n\nPlease select a sub-menu: ");
+            System.out.print("1 - Create and make a Network learn\n2 - Create all networks\n3 - Test Network\n4 - Test an example\n5 - Test a file\n6 - Apply the best rules to a network\n7 - Brute force a neural network to find the best performance\n0 - Exit\n\nPlease select a sub-menu: ");
             userInput = scanner.nextInt();
             scanner.nextLine();     // Get's rid of the newline.
 
             switch (userInput) {
-                case 1: LearnNetwork(); break;
-                case 2: TestNetwork(); break;
-                case 3: TestExample(); break;
-                case 4: TestFile(); break;
-                case 5: ApplyBestRules(); break;
-                case 6: BruteForce(); break;
+                case 1: LearnNetwork(false); break;
+                case 2: LearnNetwork(true); break;
+                case 3: TestNetwork(); break;
+                case 4: TestExample(); break;
+                case 5: TestFile(); break;
+                case 6: ApplyBestRules(); break;
+                case 7: BruteForce(); break;
                 default: break;
             }
         } while(userInput != 0);
@@ -68,17 +69,20 @@ public class Application {
      * Creates a new network and makes it learn.
      * @throws IOException
      */
-    private static void LearnNetwork() throws IOException {
-        String filename;
-        while(true) {
-            System.out.print("\n\tWrite an expression name with data examples for the network to learn: ");
-            filename = scanner.nextLine();
+    private static void LearnNetwork(boolean allNetworks) throws IOException {
+        String filename = null;
 
-            File f = new File(Utils.EXPRESSION_FOLDER + "a_" + filename + "_datapoints.txt");
-            File f1 = new File(Utils.EXPRESSION_FOLDER + filename + "_datapoints.txt");
-            if(!f.exists() && !f1.exists())
-                System.out.println("\tThere are no examples available for '" + filename + "' expression.");
-            else break;
+        if(!allNetworks) {
+            while (true) {
+                System.out.print("\n\tWrite an expression name with data examples for the network to learn: ");
+                filename = scanner.nextLine();
+
+                File f = new File(Utils.EXPRESSION_FOLDER + "a_" + filename + "_datapoints.txt");
+                File f1 = new File(Utils.EXPRESSION_FOLDER + filename + "_datapoints.txt");
+                if (!f.exists() && !f1.exists())
+                    System.out.println("\tThere are no examples available for '" + filename + "' expression.");
+                else break;
+            }
         }
 
         System.out.print("\tMaximum iterations: ");
@@ -106,7 +110,32 @@ public class Application {
             numHiddenNodes.add(hiddenNodes);
         }
 
-        CreateNeuralNetwork(filename, numHiddenNodes, maxIterations, maxError, learningRate, true);
+        if(allNetworks) {
+            File folder = new File(Utils.EXPRESSION_FOLDER);
+            File[] files = folder.listFiles();
+
+            if(files != null && files.length > 0) {
+                int i = 0;
+                while(true) {
+                    filename = files[i].getName();
+                    String[] expressionFile = filename.split("_");
+                    if(expressionFile[0].equals("b"))
+                        break;
+
+                    String expression = "";
+                    for(int j = 1; j < expressionFile.length; j++) {
+                        if(expressionFile[j].equals("datapoints.txt"))
+                            break;
+                        expression += expressionFile[j];
+                        if(j+2 != expressionFile.length)
+                            expression += "_";
+                    }
+                    CreateNeuralNetwork(expression, numHiddenNodes, maxIterations, maxError, learningRate, true);
+                    i+=2;
+                }
+            }
+        } else
+            CreateNeuralNetwork(filename, numHiddenNodes, maxIterations, maxError, learningRate, true);
     }
 
     /**

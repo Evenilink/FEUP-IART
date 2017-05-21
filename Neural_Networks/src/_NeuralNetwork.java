@@ -111,7 +111,7 @@ public class _NeuralNetwork {
      */
     public void LearnDataSet(boolean displayResults) {
         if(displayResults)
-            System.out.println("\n\tNeural network started learning.");
+            System.out.println("\n\tNeural network '" + name + "' started learning.");
 
         long timeStart = System.currentTimeMillis();
         perceptron.learn(learningDateSet, backPropagation);
@@ -119,7 +119,7 @@ public class _NeuralNetwork {
 
         networkError = backPropagation.getTotalNetworkError();
         if(displayResults)
-            System.out.println("\tNeural network has finished learning. Total network error: " + networkError + "\n");
+            System.out.println("\tNeural network '" + name + "' has finished learning. Total network error: " + networkError + "\n");
     }
 
     /**
@@ -144,8 +144,9 @@ public class _NeuralNetwork {
 
             double desiredOutput = Double.parseDouble(Arrays.toString(row.getDesiredOutput()).replace("[", "").replace("]", ""));
             double actualOutput = Double.parseDouble(Arrays.toString(perceptron.getOutput()).replace("[", "").replace("]", ""));
-            double diff = Math.pow(desiredOutput - actualOutput, 2);
-            diffArray.add(diff);
+            double diff = desiredOutput - actualOutput;
+            double formulaDiff = Math.pow(diff, 2);
+            diffArray.add(formulaDiff);
 
             if(displayResults)
                 System.out.println("\tDesired output: " + desiredOutput + " \t|\t Actual output: " + actualOutput + " \t|\t Difference: " + diff);
