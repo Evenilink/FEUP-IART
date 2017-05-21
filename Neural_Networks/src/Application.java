@@ -46,7 +46,7 @@ public class Application {
         System.out.println("*** NEURAL NETWORKS ***\n");
 
         do {
-            System.out.print("1 - Create and make a Network learn\n2 - Create all networks\n3 - Test Network\n4 - Test an example\n5 - Test a file\n6 - Apply the best rules to a network\n7 - Brute force a neural network to find the best performance\n0 - Exit\n\nPlease select a sub-menu: ");
+            System.out.print("1 - Create and make a Network learn\n2 - Create all networks\n3 - Test Network\n4 - Test an example\n5 - Test a file\n6 - Apply the best rules to a network\n0 - Exit\n\nPlease select a sub-menu: ");
             userInput = scanner.nextInt();
             scanner.nextLine();     // Get's rid of the newline.
 
@@ -57,7 +57,6 @@ public class Application {
                 case 4: TestExample(); break;
                 case 5: TestFile(); break;
                 case 6: ApplyBestRules(); break;
-                case 7: BruteForce(); break;
                 default: break;
             }
         } while(userInput != 0);
@@ -253,34 +252,6 @@ public class Application {
 
         System.out.println("\tApplying best rules:\n\t\tNumber of hidden layers: " + hiddenLayersNodes.size() + "\n\t\tMaximum iterations: " + maxIterations + "\n\t\tMaximum error: " + maxError + "\n\t\tLearning rate: " + learningRate + "\n");
         CreateNeuralNetwork(selectedNetworkName, hiddenLayersNodes, maxIterations, maxError, learningRate, true);
-    }
-
-    private static void BruteForce() throws IOException {
-        String selectedNetworkName = ListLoadedNetworks();
-        if(selectedNetworkName == null)
-            return;
-
-        // Searches the best learning rate.
-        for(float learningRate = 0.0f; learningRate <= 0.8f; learningRate += Utils.LEARNING_RATE_INCREMENT) {
-            //CreateNeuralNetwork(selectedNetworkName, Utils.DEFAULT_NUM_HIDDEN_LAYERS, Utils.DEFAULT_MAX_ITERATIONS, Utils.DEFAULT_MAX_ERROR, learningRate, false);
-            System.out.println("\t\tCreated network with learning rate = '" + learningRate + "'.");
-        }
-
-        String bestRules = GetBestRules(selectedNetworkName);
-        String[] msgSplit = bestRules.split(" ");
-        float learningRate = Float.parseFloat(msgSplit[2]);
-
-        //TODO
-        // Fix this.
-
-        // Searches the best number of hidden nodes.
-        // Formula: number of input nodes * number of hidden nodes < number of examples
-        int numHiddenNodes = 2;
-        /*for(int numHiddenNodes = 2; numHiddenNodes < neuralNetworks.get(), )< neuralNetworks.get(selectedNetworkName).getLearningDateSet().getRows().size()) {
-            CreateNeuralNetwork(selectedNetworkName, numHiddenNodes, Utils.DEFAULT_MAX_ITERATIONS, Utils.DEFAULT_MAX_ERROR, learningRate, false);
-            System.out.println("\t\tCreated network with '" + numHiddenNodes + "' hidden nodes.");
-            numHiddenNodes++;
-        }*/
     }
 
     /**

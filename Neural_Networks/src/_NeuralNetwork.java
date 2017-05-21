@@ -181,8 +181,6 @@ public class _NeuralNetwork {
             diffArray.add(output);
         }
 
-        // TODO
-        // Calculate the error. It's wrong as it is.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         double diffSum = 0;
         for(int i = 0; i < diffArray.size(); i++)
             diffSum += diffArray.get(i);
