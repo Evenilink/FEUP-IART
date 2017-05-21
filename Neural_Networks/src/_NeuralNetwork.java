@@ -147,9 +147,32 @@ public class _NeuralNetwork {
 
         try{
             PrintWriter writer = new PrintWriter(Utils.LEARNING_ERROR_FOLDER + this.getName() + ".csv", "UTF-8");
-                writer.println("Iterations, Error");
-            for (int i = 0; i < iterationErrors.size(); i++)
-                writer.format(Locale.GERMANY,"%d, \"%f\"\n",i, iterationErrors.get(i));
+            writer.println("Iterations, Error, Network Data, Value");
+
+            for (int i = 0; i < Math.max(iterationErrors.size(), perceptron.getLayersCount()+5); i++) {
+                boolean writenIteration = false;
+                if (i < iterationErrors.size()) {
+                    writer.format(Locale.GERMANY, "%d, \"%f\"", i, iterationErrors.get(i));
+                    writenIteration = true;
+                }
+
+                if (i == 0)
+                    writer.format(Locale.GERMANY,", Expression Name, %s", getName());
+                if (i == 1)
+                    writer.format(Locale.GERMANY,", Maximum Iterations, %d", maxIterations);
+                if (i == 2)
+                    writer.format(Locale.GERMANY,", Maximum Error, \"%f\"", maxError);
+                if (i == 3)
+                    writer.format(Locale.GERMANY,", Learning Rate, \"%f\"", learningRate);
+                if (i == 4)
+                    writer.format(Locale.GERMANY,", Layers, %d", (perceptron.getLayersCount()));
+                if (i > 4 && i < perceptron.getLayersCount() + 5) {
+                    if (writenIteration)
+                        writer.format(", ");
+                    writer.format(Locale.GERMANY, "Layer %d:, %d", i-5, perceptron.getLayerAt(i - 5).getNeuronsCount());
+                }
+                writer.format("\n");
+            }
             writer.close();
         } catch (IOException e) {
             System.err.println("Couldn't write iteration errors to file\n" + e.getLocalizedMessage());
