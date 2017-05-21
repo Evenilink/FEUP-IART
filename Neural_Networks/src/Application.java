@@ -21,6 +21,8 @@ public class Application {
         if (!folder.exists()) folder.mkdirs();
         folder = new File(Utils.PERFORMANCE_FOLDER);
         if (!folder.exists()) folder.mkdirs();
+        folder = new File(Utils.LEARNING_ERROR_FOLDER);
+        if (!folder.exists()) folder.mkdirs();
 
         scanner = new Scanner(System.in);
         scanner.useLocale(Locale.US);       // Forces '.' to be the decimal delimiter.

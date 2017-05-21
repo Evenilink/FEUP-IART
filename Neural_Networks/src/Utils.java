@@ -7,6 +7,7 @@ public class Utils {
     public static final String TRAINED_NETWORK_FOLDER = "trained_networks/";
     public static final String DATASETS_FOLDER = "data/datasets/";
     public static final String PERFORMANCE_FOLDER = "data/performance/";
+    public static final String LEARNING_ERROR_FOLDER = "data/learning_error/";
 
     public static final int HORIZONTAL_RESOLUTION = 640;
     public static final int VERTICAL_RESOLUTION = 480;

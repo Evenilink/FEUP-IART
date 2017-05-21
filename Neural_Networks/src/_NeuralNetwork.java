@@ -8,10 +8,7 @@ import org.neuroph.nnet.learning.BackPropagation;
 import org.neuroph.util.TransferFunctionType;
 import org.neuroph.util.data.sample.SubSampling;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,13 +110,48 @@ public class _NeuralNetwork {
         if(displayResults)
             System.out.println("\n\tNeural network '" + name + "' started learning.");
 
-        long timeStart = System.currentTimeMillis();
-        perceptron.learn(learningDateSet, backPropagation);
-        learnTime = (System.currentTimeMillis() - timeStart) / 1000f;
+        Thread t = new Thread() {
+            public void run() {
+                long timeStart = System.currentTimeMillis();
+                perceptron.learn(learningDateSet, backPropagation);
+                learnTime = (System.currentTimeMillis() - timeStart) / 1000f;
+            }
+        };
+
+        t.start();
+        int prevIteration = 1;
+        int curIteration;
+        double error;
+        ArrayList<Double> iterationErrors = new ArrayList<>();
+        while(t.isAlive()) {
+            curIteration = backPropagation.getCurrentIteration();
+            if (curIteration > prevIteration) {
+                error = backPropagation.getPreviousEpochError();
+                iterationErrors.add(error);
+                if(displayResults)
+                    System.out.format("Iteration: %" + (maxIterations + "").length() + "d of %d - Error: %f of %f\n",
+                        curIteration-1, maxIterations, error, maxError);
+                prevIteration = curIteration;
+            }
+        }
 
         networkError = backPropagation.getTotalNetworkError();
-        if(displayResults)
+        iterationErrors.add(networkError);
+
+        if(displayResults) {
+            System.out.format("Iteration: %" + (maxIterations + "").length() + "d of %d - Error: %f of %f\n",
+                    maxIterations, maxIterations, networkError, maxError);
             System.out.println("\tNeural network '" + name + "' has finished learning. Total network error: " + networkError + "\n");
+        }
+
+        try{
+            PrintWriter writer = new PrintWriter(Utils.LEARNING_ERROR_FOLDER + this.getName() + ".csv", "UTF-8");
+            for (int i = 0; i < iterationErrors.size(); i++)
+                writer.println(i + ", " + iterationErrors.get(i));
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Couldn't write iteration errors to file\n" + e.getLocalizedMessage());
+        }
     }
 
     /**
