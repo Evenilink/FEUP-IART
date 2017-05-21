@@ -12,6 +12,16 @@ public class Application {
     private static HashMap<String, _NeuralNetwork> neuralNetworks;
 
     public static void main(String[] args) throws IOException {
+        // Create folders if they don't exist
+        File folder = new File(Utils.EXPRESSION_FOLDER);
+        if (!folder.exists()) folder.mkdirs();
+        folder = new File(Utils.TRAINED_NETWORK_FOLDER);
+        if (!folder.exists()) folder.mkdirs();
+        folder = new File(Utils.DATASETS_FOLDER);
+        if (!folder.exists()) folder.mkdirs();
+        folder = new File(Utils.PERFORMANCE_FOLDER);
+        if (!folder.exists()) folder.mkdirs();
+
         scanner = new Scanner(System.in);
         scanner.useLocale(Locale.US);       // Forces '.' to be the decimal delimiter.
         neuralNetworks = new HashMap<>();
