@@ -215,7 +215,7 @@ public class _NeuralNetwork {
 
         String str = maxIterations + " " + maxError + " " + learningRate + " " + networkError + " " + learnTime;
         for(int i = 1; i < perceptron.getLayersCount()-1; i++)
-            str += " " + (perceptron.getLayers()[i].getNeuronsCount()-1);
+            str += " " + (perceptron.getLayers().get(i).getNeuronsCount()-1);
 
         FileReader fr = new FileReader(Utils.PERFORMANCE_FOLDER + name + ".txt");
         BufferedReader br = new BufferedReader(fr);
