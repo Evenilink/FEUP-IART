@@ -147,6 +147,7 @@ public class _NeuralNetwork {
 
         try{
             PrintWriter writer = new PrintWriter(Utils.LEARNING_ERROR_FOLDER + this.getName() + ".csv", "UTF-8");
+                writer.println("Iterations, Error");
             for (int i = 0; i < iterationErrors.size(); i++)
                 writer.format(Locale.GERMANY,"%d, \"%f\"\n",i, iterationErrors.get(i));
             writer.close();
